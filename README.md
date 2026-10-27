@@ -49,3 +49,6 @@ Se [docs/ARKITEKTUR.md](docs/ARKITEKTUR.md) og [docs/OFFLINE.md](docs/OFFLINE.md
 ## Licens
 
 Kode: MIT (se `LICENSE`). Kortdata: ODbL 1.0 © OpenStreetMap-bidragydere. Indholdstekster og kildehenvisninger: ejeren af projektet vælger licens (ikke fastlagt). Tredjepartskomponenter: se docs/KILDER.md.
+
+## Udgivelse på GitHub Pages
+Workflowet `.github/workflows/pages.yml` bygger og udgiver mappen `app/`. Én gang: Repository → Settings → Pages → *Source: GitHub Actions*. Derefter udgives ved hver push til `main` (eller manuelt via *Actions → Deploy til GitHub Pages → Run workflow*). Adressen bliver `https://<bruger>.github.io/SurvivalKit/`.
