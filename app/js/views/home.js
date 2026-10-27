@@ -13,7 +13,7 @@ export function pageHome() {
   const c = store.content;
   const el = h('div', { class: 'home' });
   el.append(h('h1', { class: 'sr-only' }, 'Survivalkit – dansk feltmanual'));
-  el.append(h('a', { class: 'searchbox', href: '#/sog', role: 'search' }, ic('search'), h('span', null, 'Søg i håndbogen …')));
+  el.append(h('a', { class: 'searchbox', href: '#/sog', role: 'search' }, ic('search'), h('span', null, 'Søg eller spørg …')));
   el.append(h('a', { class: 'nodcard', href: '#/nod' }, ic('alert'), h('span', null, h('b', null, 'Er du i en nødsituation?'), h('small', null, 'Faret vild, kulde, skade, vand – trin for trin')), ic('chevron', 'ic chev')));
   el.append(h('h2', { class: 'subhead' }, 'Håndbogen'),
     h('div', { class: 'temagrid' }, c.temaer.map((t) => h('a', { class: 'temakort', href: '#/tema/' + t.id }, ic(t.ikon), h('b', null, t.titel), h('small', null, temaStats(t))))));

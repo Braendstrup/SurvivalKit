@@ -1,8 +1,9 @@
 /* Service worker – genereres af tools/build.mjs (rediger ikke app/sw.js direkte).
    Strategi: hele appen forhåndscaches under et versioneret cachenavn. En ny version installeres i en NY cache; den gamle
    bruges, indtil brugeren accepterer opdateringen. Fejler en fil under installation, afbrydes hele installationen og den
-   eksisterende version er uændret (atomisk opdatering). Kortpakkerne ligger i IndexedDB og håndteres af appen selv. */
-const VERSION = '0.9.0-61b51dcb5f';
+   eksisterende version er uændret (atomisk opdatering). Kortpakkerne ligger i IndexedDB og håndteres af appen selv.
+   AI-runtime (vendor/mediapipe) er ikke i forhåndscachen: appen lægger den i en separat cache (sk-ai-*), når en model hentes. */
+const VERSION = '0.9.0-2504842575';
 const CACHE = 'sk-static-' + VERSION;
 const PRECACHE = [
  "./",
@@ -13,6 +14,11 @@ const PRECACHE = [
  "icons/icon-maskable-512.png",
  "icons/icon.svg",
  "index.html",
+ "js/ai/engine.js",
+ "js/ai/models.js",
+ "js/ai/rag.js",
+ "js/ai/safety.js",
+ "js/ai/sha256.js",
  "js/app.js",
  "js/db.js",
  "js/geo.js",
@@ -22,6 +28,7 @@ const PRECACHE = [
  "js/util.js",
  "js/views.js",
  "js/views/arter.js",
+ "js/views/chat.js",
  "js/views/gemte.js",
  "js/views/guide.js",
  "js/views/home.js",
@@ -71,7 +78,7 @@ self.addEventListener('fetch', (e) => {
   if (url.pathname.includes('/map/pack/')) return;           // store kortpakker: direkte fra netværket (valgfri download)
   e.respondWith((async () => {
     const cache = await caches.open(CACHE);
-    const hit = await cache.match(req, { ignoreSearch: true });
+    const hit = await cache.match(req, { ignoreSearch: true }) || await caches.match(req, { ignoreSearch: true }); // fx AI-runtime (sk-ai-*), caches ved modeldownload
     if (hit) return hit;
     if (req.mode === 'navigate') { const idx = await cache.match('index.html'); if (idx) return idx; }
     try { return await fetch(req); }

@@ -115,7 +115,7 @@ function listFiles(dir) {
   });
 }
 const files = listFiles(APP).map((p) => relative(APP, p).split(sep).join('/'))
-  .filter((p) => p !== 'sw.js' && !p.startsWith('map/pack/') && !p.startsWith('_') && !p.endsWith('.map') && !p.endsWith('.DS_Store'))
+  .filter((p) => p !== 'sw.js' && !p.startsWith('map/pack/') && !p.startsWith('vendor/mediapipe/') && !p.startsWith('_') && !p.endsWith('.map') && !p.endsWith('.DS_Store'))
   .sort();
 const hash = createHash('sha256');
 for (const f of files) { hash.update(f); hash.update(readFileSync(join(APP, f))); }

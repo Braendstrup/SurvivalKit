@@ -7,3 +7,4 @@ export { pageGemte, pageList } from './views/gemte.js';
 export { pageSearch } from './views/search.js';
 export { pageSettings, pageKilder } from './views/settings.js';
 export { pageArter, pageArt } from './views/arter.js';
+export { pageChat } from './views/chat.js';

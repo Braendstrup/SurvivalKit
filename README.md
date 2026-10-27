@@ -10,7 +10,8 @@ En **offline-first PWA** med en dansk survivalhåndbog (101 guides, 17 kapitler,
 npm run build          # bygger indhold (app/data/content.json) og service worker (app/sw.js)
 npm run serve          # statisk server på http://127.0.0.1:8080/ (appen = mappen app/)
 npm run test:unit      # UTM32-formler mod pyproj-referencer + indholdstest
-npm run test:e2e       # Playwright/Chromium: funktions-, offline- og robusthedstests (~3 min)
+npm run test:e2e       # Playwright/Chromium: funktions-, offline-, robustheds-, UX- og AI-tests (~3 min)
+node tests/ai_real.mjs # valgfrit: rigtig Gemma 4 E2B (2 GB download, WebGPU; meget langsom uden GPU)
 node tools/report.mjs  # genererer docs/VERIFICERING.md, KILDER.md, TESTRESULTATER.md
 ```
 
@@ -22,9 +23,15 @@ Testede forudsætninger: Node 22, Chromium (Playwright). Kortpakken genskabes me
 
 17 kapitler efter den ønskede struktur: nødsituationer og prioriteter · førstehjælp · ly · bål (inkl. lovlighed og forbud) · vand og vandrensning · knob (5 tegnede, øvrige uden tegning) · mad fra naturen · planter/svampe/forgiftning · madtilberedning · navigation (kompas, kort, UTM32/ETRS89, triangulering) · vejr · naturtyper og dyreliv · udstyr · dansk beredskab og regler · Djursland-kortet · tjeklister · om og begrænsninger.
 
-Alle praktiske guides følger samme struktur (Formål · Hvornår · Udstyr · Fremgangsmåde · Sådan kontrollerer du resultatet · Typiske fejl · Sikkerhed · Danske forhold · Alternativ løsning) og er markeret med *dokumenteret / tommelfingerregel / faglig vurdering* samt en **kontrolstatus med kilder og dato**. Nødmenuen (8 genveje) og et altid synligt 112-link findes på alle sider.
+Alle praktiske guides følger samme struktur (Formål · Hvornår · Udstyr · Fremgangsmåde · Sådan kontrollerer du resultatet · Typiske fejl · Sikkerhed · Danske forhold · Alternativ løsning) og er markeret med *dokumenteret / tommelfingerregel / faglig vurdering* samt en **kontrolstatus med kilder og dato**. Nødmenuen (8 situationer) ligger i fanen **Nød**; 112-knappen vises på Nød-siden og i nød- og førstehjælpsguides.
 
 Der er **ingen artsfotos og ingen AI-genererede artstegninger**: de kunne give falsk tryghed. Artsguiden er et støtteværktøj, ikke et bestemmelsesværktøj.
+
+## AI-assistent (valgfri, offline)
+
+Under **Søg → Spørg AI** kan man stille spørgsmål i almindeligt sprog. Svaret bygges på håndbogens egne guides med kildelinks; modellens egen viden mærkes "Ikke fra håndbogen – ikke verificeret". På førstehjælp, nød, giftige/spiselige arter vises kun svar med håndbogskilde, og nødord viser altid "Ring 112" først.
+
+Modellen hentes kun, hvis brugeren vælger det: **Gemma 4 E4B** (2,96 GB) eller **E2B** (2,0 GB) fra Hugging Face (Apache 2.0), kontrolleret med SHA-256 og gemt i browserens fillager (OPFS). Kører via MediaPipe/WebGPU. Har browseren indbygget AI (Chrome Prompt API), bruges den i stedet. Se [docs/superpowers/specs/2026-10-27-ai-chat-design.md](docs/superpowers/specs/2026-10-27-ai-chat-design.md) og begrænsningerne i [docs/BEGRAENSNINGER.md](docs/BEGRAENSNINGER.md).
 
 ## Kortet
 

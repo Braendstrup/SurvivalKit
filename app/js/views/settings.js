@@ -4,6 +4,7 @@ import { store } from '../store.js';
 import * as db from '../db.js';
 import * as packs from '../packs.js';
 import { ic, toast, kontrolBadge, row } from './ui.js';
+import { aiSettingsCard } from './chat.js';
 
 const stat = (label, val) => h('div', { class: 'stat' }, h('span', null, label), h('strong', null, val));
 
@@ -24,6 +25,7 @@ export async function pageSettings(ctx) {
       h('span', null, 'Gem min senest registrerede position lokalt (kun på enheden, kun når kortets GPS er aktiv)'))));
 
   el.append(h('h2', { class: 'subhead' }, 'Offline og lagring'), await dataCard(ctx));
+  el.append(h('h2', { class: 'subhead' }, 'AI-assistent'), await aiSettingsCard());
 
   el.append(h('h2', { class: 'subhead' }, 'Om'), h('ul', { class: 'list' },
     row('#/kilder', 'Kilder og verificering', 'Hvad er kontrolleret, og mod hvad'),
