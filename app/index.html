@@ -49,19 +49,26 @@ try { var t = localStorage.getItem('sk.theme'); if (t) document.documentElement.
     <symbol id="i-x" viewBox="0 0 24 24"><path d="m5.600 4.200 6.400 6.400 6.400-6.400 1.400 1.400-6.400 6.400 6.400 6.400-1.400 1.400-6.400-6.400-6.400 6.400-1.400-1.400 6.400-6.400-6.400-6.400z" fill="currentColor"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="m9 16.200-3.500-3.500L4 14.100l5 5 11-11-1.400-1.400z" fill="currentColor"/></symbol>
     <symbol id="i-down" viewBox="0 0 24 24"><path d="M11 3h2v9.200l3.600-3.600L18 10l-6 6-6-6 1.400-1.400L11 12.200zM5 18h14v3H5z" fill="currentColor"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z" fill="currentColor"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M8.6 5.4 10 4l8 8-8 8-1.4-1.4 6.6-6.6z" fill="currentColor"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m-1 5h2v2h-2zm0 4h2v6h-2z" fill="currentColor"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.47.47 0 0 0-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.48.48 0 0 0-.12-.61zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2" fill="currentColor"/></symbol>
   </defs>
 </svg>
 
 <a class="skip" href="#main">Spring til indhold</a>
 
 <header class="top" role="banner">
-  <a class="brand" href="#/" aria-label="Forside">
+  <a class="brand" href="#/" aria-label="Survivalkit – forside">
     <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor" opacity=".12"/><path d="M16 5 5 25h22z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M16 12v6M16 21.500v.5" stroke="currentColor" stroke-width="2.400" stroke-linecap="round"/></svg>
-    <span class="brand-text"><strong>Survivalkit</strong><small>Dansk feltmanual</small></span>
+    <span class="brand-text">Survivalkit</span>
   </a>
+  <button class="iconbtn back" type="button" aria-label="Tilbage" hidden><svg class="ic"><use href="#i-back"/></svg></button>
+  <span class="top-title" aria-hidden="true"></span>
   <div class="top-actions">
-    <span id="netpill" class="pill" role="status" aria-live="polite"></span>
-    <a class="btn-112" href="tel:112" aria-label="Ring 1-1-2 (alarm)"><svg class="ic"><use href="#i-phone"/></svg><b>112</b></a>
+    <a class="btn-112" href="tel:112" aria-label="Ring 1-1-2 (alarm)" hidden><svg class="ic"><use href="#i-phone"/></svg><b>112</b></a>
+    <a class="iconbtn" href="#/sog" aria-label="Søg"><svg class="ic"><use href="#i-search"/></svg></a>
+    <a class="iconbtn" href="#/indstillinger" aria-label="Indstillinger"><svg class="ic"><use href="#i-gear"/></svg></a>
   </div>
 </header>
 
@@ -73,8 +80,7 @@ try { var t = localStorage.getItem('sk.theme'); if (t) document.documentElement.
   <a href="#/" data-nav="home"><svg class="ic"><use href="#i-home"/></svg><span>Hjem</span></a>
   <a href="#/nod" data-nav="nod" class="nav-nod"><svg class="ic"><use href="#i-alert"/></svg><span>Nød</span></a>
   <a href="#/kort" data-nav="kort"><svg class="ic"><use href="#i-map"/></svg><span>Kort</span></a>
-  <a href="#/sog" data-nav="sog"><svg class="ic"><use href="#i-search"/></svg><span>Søg</span></a>
-  <a href="#/mig" data-nav="mig"><svg class="ic"><use href="#i-user"/></svg><span>Mig</span></a>
+  <a href="#/gemte" data-nav="gemte"><svg class="ic"><use href="#i-bookmark"/></svg><span>Gemte</span></a>
 </nav>
 
 <noscript><p style="padding:1rem">Appen kræver JavaScript. Ring 112 ved nød.</p></noscript>

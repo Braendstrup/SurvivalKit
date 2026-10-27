@@ -2,7 +2,7 @@
    Strategi: hele appen forhåndscaches under et versioneret cachenavn. En ny version installeres i en NY cache; den gamle
    bruges, indtil brugeren accepterer opdateringen. Fejler en fil under installation, afbrydes hele installationen og den
    eksisterende version er uændret (atomisk opdatering). Kortpakkerne ligger i IndexedDB og håndteres af appen selv. */
-const VERSION = '0.9.0-551ccb4c30';
+const VERSION = '0.9.0-549f3536fc';
 const CACHE = 'sk-static-' + VERSION;
 const PRECACHE = [
  "./",
@@ -21,6 +21,14 @@ const PRECACHE = [
  "js/store.js",
  "js/util.js",
  "js/views.js",
+ "js/views/arter.js",
+ "js/views/gemte.js",
+ "js/views/guide.js",
+ "js/views/home.js",
+ "js/views/nod.js",
+ "js/views/search.js",
+ "js/views/settings.js",
+ "js/views/ui.js",
  "manifest.webmanifest",
  "map/glyphs/OpenSans-Bold/0-255.pbf",
  "map/glyphs/OpenSans-Bold/256-511.pbf",

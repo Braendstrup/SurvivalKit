@@ -30,8 +30,8 @@ export async function loadContent() {
 }
 
 // ---- søgning ---------------------------------------------------------------------------------------
-const fold = (s) => norm(s).replace(/æ/g, 'ae').replace(/ø/g, 'o').replace(/å/g, 'aa').replace(/[éè]/g, 'e').replace(/ü/g, 'u');
-const tokens = (s) => fold(s).split(/[^a-z0-9]+/).filter((t) => t.length > 1);
+export const foldText = (s) => norm(s).replace(/æ/g, 'ae').replace(/ø/g, 'o').replace(/å/g, 'aa').replace(/[éè]/g, 'e').replace(/ü/g, 'u');
+const tokens = (s) => foldText(s).split(/[^a-z0-9]+/).filter((t) => t.length > 1);
 
 function blockText(bl, out = []) {
   for (const b of bl || []) {

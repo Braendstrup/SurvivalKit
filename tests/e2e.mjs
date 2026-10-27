@@ -52,8 +52,8 @@ const pageErrors = []; page.on('pageerror', (e) => pageErrors.push(e.message));
 
 await test('F01', 'Første start online: indhold indlæses, service worker aktiv', async () => {
   await page.waitForFunction('window.__swReady', null, { timeout: 30000 });
-  assert(await page.locator('h1').first().textContent() === 'Feltmanual til dansk natur og kriser', 'forside-titel');
-  assert((await page.locator('.tile.emergency').count()) === 8, 'nødmenu har 8 felter');
+  assert((await page.locator('a.temakort').count()) === 6, 'forsiden har 6 temaer');
+  assert((await page.locator('a.nodcard[href="#/nod"]').count()) === 1, 'nødkort på forsiden');
   assert(await page.evaluate(() => navigator.serviceWorker.controller !== null || true));
   const keys = await page.evaluate(() => caches.keys()); assert(keys.some((k) => k.startsWith('sk-static-')), 'cache oprettet');
   return `${content.guides.length} guides, ${content.species.length} arter`;
@@ -105,32 +105,109 @@ await test('F05', 'Søgning virker (guides, arter, danske tegn)', async () => {
   return '9 søgninger';
 });
 
-await test('F06', 'Nødmenu: 8 genveje peger på eksisterende guides, og 112-link findes på alle hovedsider', async () => {
+await test('F06', 'Nødmenu: 8 genveje peger på eksisterende guides', async () => {
   await go(page, 'nod');
-  const hrefs = await page.locator('.tile.emergency').evaluateAll((els) => els.map((e) => e.getAttribute('href')));
+  const hrefs = await page.locator('a.nodrow').evaluateAll((els) => els.map((e) => e.getAttribute('href')));
+  assert(hrefs.length === 8, 'antal genveje: ' + hrefs.length);
   for (const h of hrefs) assert(content.guides.some((g) => '#/g/' + g.id === h), 'ukendt ' + h);
-  for (const r of ['', 'nod', 'arter', 'kort', 'sog', 'mig', 'kilder', 'g/vand-kogning']) { await go(page, r); assert((await page.locator('a.btn-112[href="tel:112"]').count()) === 1, '112 mangler på ' + r); }
   return hrefs.length + ' genveje';
 });
 
 await test('F07', 'Sikkerhedsadvarsler er synlige på relevante sider', async () => {
-  const need = { 'baal-regler': '.callout.danger', 'vand-beslutning': '.callout.danger', 'svamp-sikkerhed': '.callout.danger', 'fh-hlr': '.call112', 'fh-hypotermi': '.call112', 'knob-paelestik': '.callout.danger', 'mad-vurder-sikker': '.callout.act' };
+  const need = { 'baal-regler': '.callout.danger', 'vand-beslutning': '.callout.danger', 'svamp-sikkerhed': '.callout.danger', 'fh-hlr': '.call112', 'fh-hypotermi': '.btn-112:visible', 'knob-paelestik': '.callout.danger', 'mad-vurder-sikker': '.callout.act' };
   for (const [id, sel] of Object.entries(need)) { await go(page, 'g/' + id); assert((await page.locator(sel).count()) >= 1, `${id}: ${sel}`); }
   await go(page, 'arter'); assert((await page.locator('.callout.danger').count()) >= 1, 'artsguide: advarsel');
   return Object.keys(need).length + ' sider';
 });
 
 await test('F08', 'Bogmærker, noter, kontakter og tjekliste gemmes lokalt', async () => {
-  await go(page, 'g/vand-kogning'); await page.click('button:has-text("Gem")'); await page.waitForTimeout(300);
-  await go(page, 'mig');
+  await go(page, 'g/vand-kogning'); await page.click('button[aria-label="Gem guide"]'); await page.waitForTimeout(300);
+  await go(page, 'gemte');
   await page.fill('input[aria-label="Notetitel"]', 'Min testnote'); await page.fill('textarea[aria-label="Notetekst"]', 'Mødested: P-plads ved Agri Bavnehøj');
   await page.click('button:has-text("Gem note")');
-  await page.fill('input[aria-label="Kontaktnavn"]', 'Test Kontakt'); await page.fill('input[aria-label="Telefonnummer"]', '12345678'); await page.click('button:has-text("Tilføj kontakt")');
+  await page.click('summary:has-text("Tilføj kontakt")'); await page.fill('input[aria-label="Kontaktnavn"]', 'Test Kontakt'); await page.fill('input[aria-label="Telefonnummer"]', '12345678'); await page.click('button:has-text("Tilføj kontakt")');
   await go(page, 'lister/hjemmeberedskab'); await page.locator('label.check input').first().check(); await page.waitForTimeout(300);
-  await go(page, 'mig');
-  assert(!(await page.locator('main').innerText()).includes('[object'), 'Mig-siden viser [object]');
+  await go(page, 'gemte');
+  assert(!(await page.locator('main').innerText()).includes('[object'), 'Gemte-siden viser [object]');
+  assert((await page.locator('main .list a:has-text("Kogning")').count()) >= 1, 'bogmærke på Gemte');
+  assert((await page.locator('main .list a:has-text("Hjemmeberedskab")').innerText()).includes('1 af'), 'fremdrift på tjekliste');
   assert((await page.locator('details summary:has-text("Min testnote")').count()) === 1, 'note mangler');
   assert((await page.locator('text=Test Kontakt').count()) >= 1, 'kontakt mangler');
+  return '';
+});
+
+
+// ================================================================================ UX: ramme, forside, guide, 112-regel, layout
+await test('U01', 'Forsiden: søgefelt, ét nødkort, 6 temakort og ingen 112-opfordring', async () => {
+  await go(page, '');
+  assert((await page.locator('main a.searchbox[href="#/sog"]').count()) === 1, 'søgefelt');
+  assert((await page.locator('main a.temakort').count()) === 6, 'temakort');
+  assert((await page.locator('main a[href="tel:112"]').count()) === 0, '112-link i forsidens indhold');
+  assert(!(await page.locator('.btn-112').isVisible()), '112-knap synlig på forsiden');
+  for (const t of content.temaer) { await go(page, 'tema/' + t.id); assert((await page.locator('main h1').textContent()) === t.titel, 'tema ' + t.id); }
+  return content.temaer.map((t) => t.id).join(', ');
+});
+
+await test('U02', '112-knappen vises kun på Nød og i nødrelaterede guides', async () => {
+  const vis = async (r) => { await go(page, r); return page.locator('.top .btn-112').isVisible(); };
+  for (const r of ['nod', 'g/fh-hlr', 'g/nod-faret-vild', 'g/vand-mangel']) assert(await vis(r), '112 mangler på ' + r);
+  for (const r of ['', 'tema/akut', 'g/knob-paelestik', 'g/vand-kogning', 'arter', 'sog', 'gemte', 'indstillinger', 'kort']) assert(!(await vis(r)), '112 bør ikke vises på ' + r);
+  return '';
+});
+
+await test('U03', 'Guide: Fremgangsmåde og Sikkerhed er åbne, øvrige afsnit foldet; søgetræf åbner afsnittet', async () => {
+  await go(page, 'g/vand-kogning');
+  for (const s of ['Fremgangsmåde', 'Sikkerhed']) assert(await page.locator(`article.guide h2:text-is("${s}")`).isVisible(), s + ' ikke synlig');
+  const formaal = page.locator('details.gsec:has(h2:text-is("Formål"))');
+  assert((await formaal.count()) === 1 && !(await formaal.evaluate((d) => d.open)), 'Formål bør være foldet');
+  // et ord, der kun står i "Formål"
+  const g = content.guides.find((x) => x.id === 'vand-kogning');
+  const i = g.blokke.findIndex((b) => b.t === 'sec' && b.x === 'Formål'), j = g.blokke.findIndex((b, k) => k > i && b.t === 'sec');
+  const fold = (t) => t.toLowerCase().replace(/æ/g, 'ae').replace(/ø/g, 'o').replace(/å/g, 'aa');
+  const rest = fold(JSON.stringify(g.blokke.filter((_, k) => k < i || k >= j)));
+  const word = fold(JSON.stringify(g.blokke.slice(i + 1, j))).split(/[^a-z0-9]+/).find((w) => w.length > 6 && !rest.includes(w));
+  assert(word, 'fandt intet unikt ord i Formål');
+  await go(page, 'g/vand-kogning?q=' + encodeURIComponent(word));
+  assert(await formaal.evaluate((d) => d.open), `Formål åbnes ikke ved søgning på "${word}"`);
+  return 'søgeord: ' + word;
+});
+
+await test('U04', 'Ingen vandret scroll ved 320–768 px på hovedsiderne', async () => {
+  const pages = ['', 'tema/akut', 'g/vand-kogning', 'g/knob-paelestik', 'nod', 'gemte', 'sog?q=vand', 'indstillinger', 'arter', 'a/' + content.species[0].id, 'lister/hjemmeberedskab'];
+  const bad = [];
+  for (const w of [320, 360, 390, 768]) {
+    await page.setViewportSize({ width: w, height: 800 });
+    for (const r of pages) { await go(page, r); const o = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth); if (o > 0) bad.push(`${w}px #/${r}: ${o}px`); }
+  }
+  await page.setViewportSize(VIEW);
+  assert(!bad.length, bad.join('; '));
+  return pages.length + ' sider × 4 bredder';
+});
+
+await test('U05', 'Gamle routes omdirigeres, og tjekliste-sider virker uændret', async () => {
+  await go(page, 'mig'); assert(await page.evaluate(() => location.hash) === '#/indstillinger', 'mig → indstillinger');
+  await go(page, 'lister'); assert(await page.evaluate(() => location.hash) === '#/gemte', 'lister → gemte');
+  await go(page, 'lister/hjemmeberedskab'); assert((await page.locator('main h1').textContent()).includes('Hjemmeberedskab'), 'tjekliste');
+  return '';
+});
+
+await test('U06', 'Gem og fjern en guide: vises på Gemte og under "Fortsæt" på forsiden', async () => {
+  await go(page, 'g/baal-regler'); await page.click('button[aria-label="Gem guide"]'); await page.waitForTimeout(200);
+  const titel = content.guides.find((g) => g.id === 'baal-regler').titel;
+  await go(page, 'gemte'); assert((await page.locator(`main .list a:has-text("${titel}")`).count()) === 1, 'på Gemte');
+  await go(page, ''); assert((await page.locator(`main .list a:has-text("${titel}")`).count()) >= 1, 'under Fortsæt');
+  await go(page, 'gemte'); await page.click(`button[aria-label="Fjern ${titel}"]`); await page.waitForTimeout(200);
+  assert((await page.locator(`main .list a:has-text("${titel}")`).count()) === 0, 'ikke fjernet');
+  return '';
+});
+
+await test('U07', 'Bundmenu: 4 faner, og den aktive fane følger siden', async () => {
+  assert((await page.locator('nav.bottom a').count()) === 4, 'antal faner');
+  for (const [r, nav] of [['', 'home'], ['nod', 'nod'], ['tema/akut', 'home'], ['g/vand-kogning', 'home'], ['gemte', 'gemte'], ['lister/hjemmeberedskab', 'gemte'], ['indstillinger', 'home'], ['kort', 'kort']]) {
+    await go(page, r); const on = await page.locator('nav.bottom a.on').getAttribute('data-nav'); assert(on === nav, `#/${r}: aktiv ${on}, forventet ${nav}`);
+  }
+  await go(page, 'g/vand-kogning'); assert(await page.locator('.top .back').isVisible(), 'tilbage-pil på guide');
+  await go(page, ''); assert(!(await page.locator('.top .back').isVisible()), 'ingen tilbage-pil på forsiden');
   return '';
 });
 
@@ -235,7 +312,7 @@ await test('K08', 'GPS-position vises med korrekte UTM-koordinater', async () =>
 });
 
 await test('K09', 'Mørk tilstand og nat-tilstand skifter farver', async () => {
-  await go(page, 'mig');
+  await go(page, 'indstillinger');
   await page.selectOption('#sel-theme', 'dark'); await page.waitForTimeout(200);
   const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor); assert(bg !== 'rgb(243, 240, 230)', 'mørk bg: ' + bg);
   await page.selectOption('#sel-theme', 'night'); await page.waitForTimeout(200);
@@ -318,7 +395,7 @@ page.on('dialog', (d) => d.accept('Offline-P'));
 await test('O01', 'OFFLINE (server lukket, browser genstartet): appen starter og viser forsiden', async () => {
   await page.goto(`http://127.0.0.1:${portOff}/`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction('window.__appReady', null, { timeout: 30000 });
-  assert((await page.locator('h1').first().textContent()).includes('Feltmanual'), 'forside');
+  assert((await page.locator('a.temakort').count()) === 6, 'forside med temaer');
   return '';
 });
 await test('O02', 'OFFLINE: alle kernekapitler og alle guides kan læses', async () => {
@@ -339,9 +416,9 @@ await test('O04', 'OFFLINE: søgning, artsguide og kilder virker', async () => {
   return '';
 });
 await test('O05', 'OFFLINE: bogmærker, noter, nødkontakter og tjekliste overlever genstart', async () => {
-  await go(page, 'mig');
-  assert((await page.locator('details summary:has-text("Min testnote")').count()) === 1, 'note'); assert((await page.locator('text=Test Kontakt').count()) >= 1, 'kontakt'); assert((await page.locator('a:has-text("Hjælp")').count()) >= 0, '');
-  assert((await page.locator('.card:has-text("Bogmærker") a:has-text("Kogning")').count()) >= 1, 'bogmærke');
+  await go(page, 'gemte');
+  assert((await page.locator('details summary:has-text("Min testnote")').count()) === 1, 'note'); assert((await page.locator('text=Test Kontakt').count()) >= 1, 'kontakt');
+  assert((await page.locator('main .list a:has-text("Kogning")').count()) >= 1, 'bogmærke');
   await go(page, 'lister/hjemmeberedskab'); assert(await page.locator('label.check input').first().isChecked(), 'tjekliste');
   return '';
 });

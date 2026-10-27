@@ -13,7 +13,7 @@
 - **Lager:** hentning afvises med klar besked, hvis ledig kvote < 1,3 × pakkestørrelsen (testet: R01).
 
 ## Begrænsninger ved browserlager
-Browsere kan rydde websitelager ved lav lagerplads eller lang inaktivitet (Safari/iOS: op til 7 dage uden brug, hvis ikke tilføjet startskærm). Appen anmoder om vedvarende lager (`navigator.storage.persist()`) og viser status under **Mig → Data**. Eksportér derfor noter og waypoints (JSON/GPX).
+Browsere kan rydde websitelager ved lav lagerplads eller lang inaktivitet (Safari/iOS: op til 7 dage uden brug, hvis ikke tilføjet startskærm). Appen anmoder om vedvarende lager (`navigator.storage.persist()`) og viser status under **Indstillinger → Offline og lagring**. Eksportér derfor noter og waypoints (JSON/GPX).
 
 ## Hvad kræver hardware/net
 GPS, kompas og batteri afhænger af enheden. Aktuelle regler, afbrændingsforbud, vejr og beredskabsmeddelelser kræver net eller radio – en offlineapp kan aldrig garantere, at de er opdaterede.

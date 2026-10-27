@@ -15,6 +15,12 @@ for (const s of c.species) {
   if (['standard', 'forsigtighed'].includes(s.kategori) && s.kontrol.status === 'ikke') bad(s.id + ': spiselig markeret uden verificering');
   if (s.kategori === 'standard' && !(s.forvekslinger || []).length) bad(s.id + ': ingen forvekslinger');
 }
+// temaer: hvert kapitel i præcis ét tema, ingen ukendte kapitler
+const temaCount = new Map();
+for (const t of c.temaer || []) for (const k of t.kapitler) temaCount.set(k, (temaCount.get(k) || 0) + 1);
+if ((c.temaer || []).length !== 6) bad('forventede 6 temaer, fandt ' + (c.temaer || []).length);
+for (const ch of c.chapters) if (!ch.skjul && temaCount.get(ch.id) !== 1) bad(`kapitel ${ch.id}: ligger i ${temaCount.get(ch.id) || 0} temaer (skal være 1)`);
+for (const k of temaCount.keys()) if (!c.chapters.some((ch) => ch.id === k)) bad('tema peger på ukendt kapitel ' + k);
 // ingen art må kaldes "sikker" alene; ingen invasive/forældede råd
 const forbidden = [/sug giften ud/i, /skær i (bid|såret)/i, /drik havvand/i];
 for (const f of forbidden) if (f.test(text(c.guides.map((g) => g.blokke)).replace(/Smør aldrig flåten[^"]*/g, ''))) console.log('INFO: mønster fundet (kontrollér kontekst):', f);
