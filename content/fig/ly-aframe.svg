@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 150"><title>A-tag af tarp: stram rygsnor i brysthøjde mellem to træer, hjørner spændt ud med barduner til pløkke</title>
+<g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M18 140 V20 M242 140 V20" stroke-width="6"/>
+<path d="M18 40 L242 40" stroke-width="2.5"/>
+<path d="M30 40 L130 36 L230 40 L250 118 L10 118 Z" fill="currentColor" fill-opacity=".14"/>
+<path d="M130 36 V118" stroke-opacity=".3"/>
+<path d="M10 118 L-2 140 M250 118 L262 140" stroke-width="2"/>
+<circle cx="130" cy="106" r="8" fill="currentColor" fill-opacity=".25"/>
+</g><g font-family="system-ui,sans-serif" fill="currentColor" font-size="10"><text x="30" y="30">rygsnor – stram, i brysthøjde</text><text x="76" y="136">isoler nedefra · åbning væk fra vinden</text></g></svg>

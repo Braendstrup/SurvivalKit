@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f4a38">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Dansk survivalhåndbog med offline topografisk kort over Djursland. Virker uden internet efter første installation.">
+<title>Survivalkit – dansk feltmanual</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+<script>
+// Sæt tema før første tegning (undgår blink). Alt lokalt; ingen eksterne kald.
+try { var t = localStorage.getItem('sk.theme'); if (t) document.documentElement.dataset.theme = t; var s = localStorage.getItem('sk.size'); if (s) document.documentElement.dataset.size = s; } catch (e) {}
+</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 2 1.5 20.5h21zM11 9h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 3 3 5.5v15L9 18l6 3 6-2.5v-15L15 6zm0 2.2 5 2.5v11.1l-5-2.5zM5 6.8l2-.9v11.3l-2 .9zm14 10.4-2 .9V6.8l2-.9z" fill="currentColor"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><path d="M10 3a7 7 0 1 0 4.3 12.5l5.1 5.1 1.4-1.4-5.1-5.1A7 7 0 0 0 10 3m0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10" fill="currentColor"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9m0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5" fill="currentColor"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="currentColor"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1" fill="currentColor"/></symbol>
+    <symbol id="i-bookmark-o" viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1m1 2v13l5-2.9 5 2.9V5z" fill="currentColor"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5" fill="currentColor"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M13 2s1 4-1.5 6.5S8 12 8 14.5A4.5 4.5 0 0 0 12.5 19 5 5 0 0 0 17.5 14c0-2-1-3-1.8-4.4-.4 1-1 1.7-1.7 2C14 9 14.3 4.5 13 2M6.5 13C5 14 4 16 4 17.5 4 20 6.5 22 12 22c-3.3-1-4.5-3-4.5-5.5 0-1.2.4-2.5-1-3.5" fill="currentColor"/></symbol>
+    <symbol id="i-cross" viewBox="0 0 24 24"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z" fill="currentColor"/></symbol>
+    <symbol id="i-shelter" viewBox="0 0 24 24"><path d="M12 3 2 20h20zm0 5.5 5.6 9.5H6.4z" fill="currentColor"/></symbol>
+    <symbol id="i-knot" viewBox="0 0 24 24"><path d="M12 3a5 5 0 0 0-5 5c0 2 1.4 3.4 3 4.3L6.5 16A4 4 0 1 0 10 21a4 4 0 0 0 .7-2.2L14 14.3c1.8 1.4 3 2.5 3 4.2A2.500 2.500 0 1 0 19.500 16c-.4-2-2-3.200-3.700-4.400C17.200 10.700 19 9.500 19 8a5 5 0 0 0-7-5m-.3 2.100a3 3 0 0 1 4.200 2.700c0 .800-1 1.500-2.300 2.300-.700-.500-1.500-1-2.400-1.800-.800-.600-1.200-1.200-1.200-1.700a2 2 0 0 1 1.700-1.500" fill="currentColor"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 3C9 3 4 9 4 15c0 1.500.4 2.800 1 4l-2 2 1.400 1.400 2-2c1.200.700 2.600 1.100 4.100 1.100C16 21.500 20 15 20 3m-3 3c0 6-3 11-8.500 11-.4 0-.9-.1-1.300-.2C8.500 12.500 11.500 9 17 6" fill="currentColor"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16m4.500 3.500-6 2.500-2.500 6 6-2.500z" fill="currentColor"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 5h12v2H9zm0 6h12v2H9zm0 6h12v2H9zM3 5h4v2H3zm0 6h4v2H3zm0 6h4v2H3z" fill="currentColor"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M6.500 19A4.500 4.500 0 0 1 6 10a6 6 0 0 1 11.500 1.500A3.800 3.800 0 0 1 17.500 19z" fill="currentColor"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 3h13a1 1 0 0 1 1 1v14H7a1.500 1.500 0 0 0 0 3h12v2H7a3.500 3.500 0 0 1-3.500-3.500V4.500A1.500 1.500 0 0 1 5 3m2 2v10.500c.2-.1.300-.1.500-.1H17V5z" fill="currentColor"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24"><path d="M22 6.500a5 5 0 0 1-6.700 4.700L8 18.500a2.100 2.100 0 0 1-3-3l7.300-7.300A5 5 0 0 1 18 2l-3 3 .5 3.500L19 9z" fill="currentColor"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><path d="M3 16h18v2H3zm0-6h2v6H3zm4 3h2v3H7zm4-3h2v6h-2zm4 3h2v3h-2zm4-3h2v6h-2z" fill="currentColor"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7z" fill="currentColor"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M4 11h16v2H4z" fill="currentColor"/></symbol>
+    <symbol id="i-locate" viewBox="0 0 24 24"><path d="M11 2h2v3.1A7 7 0 0 1 18.900 11H22v2h-3.100A7 7 0 0 1 13 18.900V22h-2v-3.100A7 7 0 0 1 5.100 13H2v-2h3.100A7 7 0 0 1 11 5.100zm1 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10m0 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4" fill="currentColor"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7zm0 12.500 7.700-3.800L22 12l-10 5-10-5 2.300-1.300zm0 4.500 7.700-3.800L22 16.500 12 21.500 2 16.500l2.300-1.300z" fill="currentColor"/></symbol>
+    <symbol id="i-ruler" viewBox="0 0 24 24"><path d="m3 17 14-14 4 4L7 21zm2.800 0L7 18.200l1.800-1.800-1.200-1.200zM9 13l1.200 1.200 1.800-1.800L10.800 11.200zm4-4 1.200 1.200L16 8.400 14.800 7.200z" fill="currentColor"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.200 7 13 7 13s7-7.800 7-13a7 7 0 0 0-7-7m0 9.500A2.500 2.500 0 1 1 12 6.500a2.500 2.500 0 0 1 0 5" fill="currentColor"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><path d="M6 3a3 3 0 0 0-1 5.800V15a3 3 0 1 0 2 0V8.800A3 3 0 0 0 6 3m12 9a3 3 0 0 0-1 5.800V20h2v-2.200A3 3 0 0 0 18 12M11 4h6v2h-6zm0 0" fill="currentColor"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m5.600 4.200 6.400 6.400 6.400-6.400 1.400 1.400-6.400 6.400 6.400 6.400-1.400 1.400-6.400-6.400-6.400 6.400-1.400-1.400 6.400-6.400-6.400-6.400z" fill="currentColor"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m9 16.200-3.500-3.500L4 14.100l5 5 11-11-1.400-1.400z" fill="currentColor"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M11 3h2v9.200l3.600-3.600L18 10l-6 6-6-6 1.400-1.400L11 12.200zM5 18h14v3H5z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Spring til indhold</a>
+
+<header class="top" role="banner">
+  <a class="brand" href="#/" aria-label="Forside">
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor" opacity=".12"/><path d="M16 5 5 25h22z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M16 12v6M16 21.500v.5" stroke="currentColor" stroke-width="2.400" stroke-linecap="round"/></svg>
+    <span class="brand-text"><strong>Survivalkit</strong><small>Dansk feltmanual</small></span>
+  </a>
+  <div class="top-actions">
+    <span id="netpill" class="pill" role="status" aria-live="polite"></span>
+    <a class="btn-112" href="tel:112" aria-label="Ring 1-1-2 (alarm)"><svg class="ic"><use href="#i-phone"/></svg><b>112</b></a>
+  </div>
+</header>
+
+<div id="updatebar" class="updatebar" hidden role="status"></div>
+
+<main id="main" tabindex="-1"></main>
+
+<nav class="bottom" aria-label="Hovednavigation">
+  <a href="#/" data-nav="home"><svg class="ic"><use href="#i-home"/></svg><span>Hjem</span></a>
+  <a href="#/nod" data-nav="nod" class="nav-nod"><svg class="ic"><use href="#i-alert"/></svg><span>Nød</span></a>
+  <a href="#/kort" data-nav="kort"><svg class="ic"><use href="#i-map"/></svg><span>Kort</span></a>
+  <a href="#/sog" data-nav="sog"><svg class="ic"><use href="#i-search"/></svg><span>Søg</span></a>
+  <a href="#/mig" data-nav="mig"><svg class="ic"><use href="#i-user"/></svg><span>Mig</span></a>
+</nav>
+
+<noscript><p style="padding:1rem">Appen kræver JavaScript. Ring 112 ved nød.</p></noscript>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

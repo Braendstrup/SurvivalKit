@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 150"><title>Bålsted: ryddet jord, vand ved hånden, læ; kun på lovlig bålplads og uden afbrændingsforbud</title>
+<g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
+<path d="M10 120 H270" stroke-opacity=".5"/>
+<circle cx="140" cy="112" r="64" stroke-dasharray="4 5" stroke-width="2" fill="currentColor" fill-opacity=".05"/>
+<path d="M124 118 q8 -26 16 -6 q8 -24 16 6 Z" fill="currentColor" fill-opacity=".3"/>
+<path d="M200 118 h14 l-2 -16 h-10 Z" fill="currentColor" fill-opacity=".2"/>
+<path d="M12 56 H42 l-8 -6 m8 6 l-8 6"/></g>
+<g font-family="system-ui,sans-serif" fill="currentColor" font-size="10"><text x="8" y="44" font-weight="700">VIND</text><text x="112" y="42">2–3 m ryddet jord</text><text x="190" y="96">vand klar</text><text x="8" y="144">Tjek forbud først · hold bålet lille · slukkes helt</text></g></svg>

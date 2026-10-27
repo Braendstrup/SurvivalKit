@@ -1,0 +1,15 @@
+{
+  "name": "survivalkit",
+  "version": "0.9.0",
+  "private": true,
+  "description": "Dansk survivalhåndbog med offline topografisk kort over Djursland (PWA)",
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "serve": "node tests/serve.mjs app 8080",
+    "test:unit": "node tests/unit_geo.mjs && node tests/unit_content.mjs",
+    "test:e2e": "node tests/e2e.mjs",
+    "report": "node tools/report.mjs",
+    "test": "npm run test:unit && npm run test:e2e"
+  }
+}

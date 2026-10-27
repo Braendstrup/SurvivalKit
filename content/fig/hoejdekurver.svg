@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 170"><title>Højdekurver og terrænformer: tætte kurver = stejlt; lukkede ringe = top; V peger mod højere terræn i en dal</title>
+<g stroke="currentColor" stroke-width="1.8" fill="none">
+<ellipse cx="70" cy="80" rx="58" ry="40"/><ellipse cx="70" cy="80" rx="42" ry="28"/><ellipse cx="70" cy="80" rx="26" ry="16"/><ellipse cx="70" cy="80" rx="10" ry="6" fill="currentColor" fill-opacity=".3"/>
+<path d="M160 20 Q190 70 175 100 Q165 130 190 150" stroke-width="2.4" stroke-opacity=".4"/>
+<path d="M190 20 Q215 60 205 110" /><path d="M215 20 Q232 55 224 100" /><path d="M240 20 Q248 50 244 90"/>
+<path d="M260 150 Q290 100 316 120" /><path d="M262 130 Q288 82 316 100"/><path d="M264 110 Q286 66 316 80"/>
+</g>
+<g font-family="system-ui,sans-serif" fill="currentColor" font-size="11"><text x="40" y="150" font-weight="700">Bakke/top</text><text x="170" y="14" font-weight="700">Dal (V)</text><text x="262" y="164" font-weight="700">Tæt = stejlt</text><text x="8" y="14" font-size="10">tal inderst = højeste</text></g></svg>

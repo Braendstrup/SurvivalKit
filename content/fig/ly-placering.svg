@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 160"><title>Valg af sted: læsiden af en bakke eller skov, tørt og fladt – undgå døde grene, skrænter og lavninger med vand</title>
+<g stroke="currentColor" stroke-width="2.5" fill="none" stroke-linejoin="round">
+<path d="M0 130 L50 130 L110 60 L170 110 L210 128 L300 128" fill="currentColor" fill-opacity=".1"/>
+<path d="M250 128 V96 M250 96 l-16 -16 M250 96 l16 -16 M250 112 l-12 -10 M250 112 l12 -10" />
+<path d="M258 86 l22 6" stroke-dasharray="3 3"/>
+<path d="M150 118 l4 -18 M164 114 l4 -14"/>
+<path d="M12 150 H70" stroke-opacity=".5"/>
+</g>
+<g font-family="system-ui,sans-serif" fill="currentColor" font-size="11"><text x="8" y="22" font-weight="700">VIND →</text><path d="M60 18 H100 l-8 -5 m8 5 l-8 5" stroke="currentColor" fill="none" stroke-width="2"/>
+<text x="126" y="148" font-weight="700">OK: læ, tørt</text><text x="196" y="46" font-weight="700">NEJ: døde grene</text><text x="14" y="146" font-weight="700">NEJ: lavning/vand</text><text x="64" y="52" font-weight="700">NEJ: skrænt</text></g></svg>

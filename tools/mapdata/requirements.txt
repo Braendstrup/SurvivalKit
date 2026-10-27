@@ -1,0 +1,9 @@
+osmium>=4.3
+shapely>=2.0
+pyproj>=3.6
+scikit-image>=0.22
+scipy
+numpy
+Pillow
+mapbox-vector-tile>=2.0
+pmtiles>=3.5

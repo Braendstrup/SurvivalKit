@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140"><title>Fjern flåt: grib tæt ved huden med flåttang eller pincet og træk jævnt og stabilt ud – vrid og ryk ikke</title>
+<g stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none">
+<path d="M10 100 H210" /><path d="M10 100 C60 92 160 92 210 100 V130 H10 Z" fill="currentColor" fill-opacity=".1" stroke="none"/>
+<ellipse cx="110" cy="88" rx="12" ry="9" fill="currentColor" fill-opacity=".4"/>
+<path d="M104 78 L84 30 M116 78 L136 30" stroke-width="4"/>
+<path d="M84 30 L76 14 M136 30 L144 14" stroke-width="4"/>
+<path d="M110 70 V30" stroke-width="2" stroke-dasharray="4 4"/><path d="M104 38 L110 28 L116 38" stroke-width="2"/>
+</g>
+<text x="8" y="14" font-size="11" fill="currentColor" font-family="system-ui,sans-serif">Grib tæt ved huden</text>
+<text x="126" y="60" font-size="11" fill="currentColor" font-family="system-ui,sans-serif">træk jævnt op</text>
+<text x="8" y="136" font-size="10" fill="currentColor" font-family="system-ui,sans-serif">Ikke vrid/ryk, ikke olie eller smør · skematisk</text></svg>

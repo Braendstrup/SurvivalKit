@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 150"><title>Hjertelungeredning: hælen af hånden midt på brystkassen, strakte arme, 5–6 cm ned, 100–120 pr. minut</title>
+<g stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M10 118 H250" stroke-opacity=".35"/>
+<circle cx="40" cy="104" r="11" fill="currentColor" fill-opacity=".15"/>
+<path d="M52 106 L150 106 L150 116 L52 116 Z" fill="currentColor" fill-opacity=".1"/>
+<path d="M150 108 L238 108"/>
+<circle cx="112" cy="40" r="11" fill="currentColor" fill-opacity=".15"/>
+<path d="M114 52 L128 82"/><!-- overkrop -->
+<path d="M128 82 L110 96"/><!-- strakte arme -->
+<path d="M132 82 L170 96 L188 118"/><!-- ben, knæ -->
+<path d="M96 100 L124 100" stroke-width="5"/>
+</g>
+<g stroke="currentColor" stroke-width="2" fill="none"><path d="M218 62 V96 M214 70 l4 -8 l4 8 M214 88 l4 8 l4 -8"/></g>
+<text x="190" y="52" font-size="11" font-weight="700" fill="currentColor" font-family="system-ui,sans-serif">5–6 cm</text>
+<text x="8" y="16" font-size="11" fill="currentColor" font-family="system-ui,sans-serif">Ring 112 – Tryk ned – Giv stød</text>
+<text x="8" y="140" font-size="10" fill="currentColor" font-family="system-ui,sans-serif">Hælen af hånden midt på brystet · 30 tryk : 2 indblæsninger · 100–120 tryk/min</text></svg>

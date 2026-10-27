@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 170"><title>Hjertestarter: sæt to pads på det bare bryst, placeret som tegnet på hver pad (skematisk)</title>
+<g stroke="currentColor" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round">
+<path d="M60 20 C40 24 30 40 30 64 L34 150 H166 L170 64 C170 40 160 24 140 20 C128 30 72 30 60 20 Z" fill="currentColor" fill-opacity=".07"/>
+<rect x="46" y="44" width="34" height="22" rx="5" fill="currentColor" fill-opacity=".25" transform="rotate(-10 63 55)"/>
+<rect x="128" y="94" width="34" height="22" rx="5" fill="currentColor" fill-opacity=".25" transform="rotate(75 145 105)"/>
+</g>
+<text x="8" y="14" font-size="10" fill="currentColor" font-family="system-ui,sans-serif">Sæt to pads på bart bryst</text>
+<text x="8" y="166" font-size="10" fill="currentColor" font-family="system-ui,sans-serif">Placering: som tegnet på hver pad (skematisk)</text></svg>

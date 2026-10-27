@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 140"><title>To enkle bålopbygninger: tipi (kegle) og træstabel (kryds) – altid på lovligt bålsted</title>
+<g stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none">
+<path d="M30 124 L70 30 M110 124 L70 30 M50 124 L70 30 M90 124 L70 30"/><path d="M45 124 H95" stroke-width="2"/>
+<path d="M170 124 H250 M176 108 H244 M182 92 H238 M188 76 H232" /><path d="M176 124 V76 M244 124 V76" stroke-width="2" stroke-opacity=".5"/></g>
+<g font-family="system-ui,sans-serif" fill="currentColor"><text x="40" y="18" font-size="12" font-weight="700">Tipi</text><text x="190" y="18" font-size="12" font-weight="700">Træstabel</text><text x="8" y="138" font-size="9">åbning mod vinden, optænding i midten</text></g></svg>

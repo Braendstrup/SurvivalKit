@@ -1,0 +1,5 @@
+node_modules/
+tools/mapdata/work/
+*.osm.pbf
+.DS_Store
+__pycache__/

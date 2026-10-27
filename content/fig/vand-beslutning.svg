@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 330"><title>Beslutningsguide for drikkevand: kendt sikker kilde, behandling eller afstå</title>
+<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="currentColor"/></marker></defs>
+<g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#ah)">
+<path d="M150 46 V62"/><path d="M150 118 V140"/><path d="M150 196 V218"/><path d="M150 262 V280"/><path d="M60 94 H20 V300"/><path d="M240 94 H280 V300"/>
+</g>
+<g stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".08">
+<rect x="70" y="4" width="160" height="42" rx="8"/><rect x="50" y="62" width="200" height="56" rx="8"/><rect x="40" y="140" width="220" height="56" rx="8"/><rect x="40" y="218" width="220" height="44" rx="8"/><rect x="60" y="280" width="180" height="40" rx="8" fill-opacity=".22"/>
+</g>
+<g font-family="system-ui,sans-serif" fill="currentColor" font-size="11" text-anchor="middle">
+<text x="150" y="22" font-weight="700">Hvor kommer vandet fra?</text><text x="150" y="36">kendt sikker kilde?</text>
+<text x="150" y="82">Hane, flaskevand, godkendt post</text><text x="150" y="98">= drik (kog ved kogeanbefaling)</text>
+<text x="150" y="158" font-weight="700">Naturligt vand (sø, å, regn, brønd)</text><text x="150" y="174">tegn på KEMI? olie, lugt, døde dyr,</text><text x="150" y="188">landbrug/industri/kloak tæt på?</text>
+<text x="150" y="236" font-weight="700">NEJ: filtrér → kog 1 min</text><text x="150" y="252">→ opbevar rent</text>
+<text x="150" y="298" font-weight="700">JA / usikker: DRIK IKKE</text><text x="150" y="312">find anden kilde, ring 112 ved nød</text>
+<text x="40" y="86" font-size="10">ja</text><text x="262" y="86" font-size="10">nej</text></g></svg>

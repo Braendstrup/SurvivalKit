@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140"><title>Stabilt sideleje (skematisk, set ovenfra): øverste arm støtter hovedet, øverste ben bøjet, hovedet let tilbage</title>
+<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="52" cy="62" r="17" fill="currentColor" fill-opacity=".12"/>
+<path d="M68 70 L150 78 L150 100 L70 96 Z" fill="currentColor" fill-opacity=".08"/>
+<path d="M78 74 L98 52 L72 44" /><!-- øverste arm: albue ud, hånd under kind -->
+<path d="M82 98 L100 118 L72 124"/><!-- nederste arm -->
+<path d="M150 82 L196 70 L212 100"/><!-- øverste ben bøjet frem -->
+<path d="M150 96 L214 100 L226 100"/><!-- nederste ben næsten strakt -->
+</g>
+<text x="8" y="16" font-size="11" fill="currentColor" font-family="system-ui,sans-serif">Hoved let tilbage, mund nedad</text>
+<text x="108" y="38" font-size="10" fill="currentColor" font-family="system-ui,sans-serif">arm støtter kind</text>
+<text x="168" y="62" font-size="10" fill="currentColor" font-family="system-ui,sans-serif">knæ bøjet frem</text>
+<text x="8" y="136" font-size="10" fill="currentColor" font-family="system-ui,sans-serif">Skematisk – tjek vejrtrækning, ring 112</text></svg>

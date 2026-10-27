@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 150"><title>Halvtag (lean-to) af tarp: lav bagside mod vinden, åbning mod læ, isolering under dig</title>
+<g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M20 140 H250"/><path d="M60 30 V140" stroke-width="6"/><path d="M60 30 L200 120 L200 140" fill="currentColor" fill-opacity=".14"/>
+<path d="M200 120 L226 140" stroke-width="2"/><circle cx="130" cy="112" r="9" fill="currentColor" fill-opacity=".25"/><path d="M100 134 H170" stroke-width="5" stroke-opacity=".5"/>
+<path d="M8 50 H40 l-8 -6 m8 6 l-8 6" stroke-width="2"/></g>
+<text x="8" y="40" font-size="11" font-weight="700" fill="currentColor" font-family="system-ui,sans-serif">VIND</text><text x="170" y="100" font-size="10" fill="currentColor" font-family="system-ui,sans-serif">åbning (læ)</text></svg>
