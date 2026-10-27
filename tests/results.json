@@ -1,164 +1,213 @@
 {
- "generated": "2026-10-27T00:00:14.423Z",
+ "generated": "2026-10-27T22:48:53.036Z",
  "engine": "Playwright/Chromium chromium",
- "total": 33,
- "ok": 33,
+ "total": 40,
+ "ok": 40,
  "failed": 0,
- "durationSec": 167,
+ "durationSec": 190,
  "results": [
   {
    "id": "F01",
    "name": "Første start online: indhold indlæses, service worker aktiv",
    "status": "OK",
-   "ms": 327,
+   "ms": 400,
    "detail": "101 guides, 31 arter"
   },
   {
    "id": "F02",
    "name": "Alle 17 kapitler kan åbnes og har indhold",
    "status": "OK",
-   "ms": 4459,
+   "ms": 4469,
    "detail": "17 kapitler"
   },
   {
    "id": "F03",
    "name": "Alle guides har reelt indhold (ingen tomme sider) og praktiske guides har de 9 standardafsnit",
    "status": "OK",
-   "ms": 26515,
+   "ms": 26506,
    "detail": "101 guides (55 praktiske med 9 afsnit)"
   },
   {
    "id": "F04",
    "name": "Alle arter kan åbnes; giftige/forsigtige arter viser advarsler; spiselige har forvekslingstabel og kilder",
    "status": "OK",
-   "ms": 8226,
+   "ms": 8264,
    "detail": "31 arter"
   },
   {
    "id": "F05",
    "name": "Søgning virker (guides, arter, danske tegn)",
    "status": "OK",
-   "ms": 4748,
+   "ms": 4756,
    "detail": "9 søgninger"
   },
   {
    "id": "F06",
-   "name": "Nødmenu: 8 genveje peger på eksisterende guides, og 112-link findes på alle hovedsider",
+   "name": "Nødmenu: 8 genveje peger på eksisterende guides",
    "status": "OK",
-   "ms": 2342,
+   "ms": 260,
    "detail": "8 genveje"
   },
   {
    "id": "F07",
    "name": "Sikkerhedsadvarsler er synlige på relevante sider",
    "status": "OK",
-   "ms": 2074,
+   "ms": 2076,
    "detail": "7 sider"
   },
   {
    "id": "F08",
    "name": "Bogmærker, noter, kontakter og tjekliste gemmes lokalt",
    "status": "OK",
-   "ms": 1834,
+   "ms": 2035,
+   "detail": ""
+  },
+  {
+   "id": "U01",
+   "name": "Forsiden: søgefelt, ét nødkort, 6 temakort og ingen 112-opfordring",
+   "status": "OK",
+   "ms": 1828,
+   "detail": "akut, ly-vand, mad-natur, vej-vejr, udstyr, regler"
+  },
+  {
+   "id": "U02",
+   "name": "112-knappen vises kun på Nød og i nødrelaterede guides",
+   "status": "OK",
+   "ms": 3363,
+   "detail": ""
+  },
+  {
+   "id": "U03",
+   "name": "Guide: Fremgangsmåde og Sikkerhed er åbne, øvrige afsnit foldet; søgetræf åbner afsnittet",
+   "status": "OK",
+   "ms": 548,
+   "detail": "søgeord: sygdomsfremkaldende"
+  },
+  {
+   "id": "U04",
+   "name": "Ingen vandret scroll ved 320–768 px på hovedsiderne",
+   "status": "OK",
+   "ms": 11381,
+   "detail": "11 sider × 4 bredder"
+  },
+  {
+   "id": "U05",
+   "name": "Gamle routes omdirigeres, og tjekliste-sider virker uændret",
+   "status": "OK",
+   "ms": 780,
+   "detail": ""
+  },
+  {
+   "id": "U06",
+   "name": "Gem og fjern en guide: vises på Gemte og under \"Fortsæt\" på forsiden",
+   "status": "OK",
+   "ms": 1509,
+   "detail": ""
+  },
+  {
+   "id": "U07",
+   "name": "Bundmenu: 4 faner, og den aktive fane følger siden",
+   "status": "OK",
+   "ms": 2589,
    "detail": ""
   },
   {
    "id": "F09",
    "name": "Kortpakke hentes med fremdrift, SHA-256-kontrol og aktiveres",
    "status": "OK",
-   "ms": 6140,
+   "ms": 5251,
    "detail": "version 2026.10.26"
   },
   {
    "id": "K01",
    "name": "Kortet viser data på flere zoomniveauer (veje, skov, vand, kurver, bygninger, punkter)",
    "status": "OK",
-   "ms": 10329,
+   "ms": 13025,
    "detail": "13 lag/zoom-kombinationer med data"
   },
   {
    "id": "K02",
    "name": "Koordinater, målestok, nordpil og højde vises korrekt",
    "status": "OK",
-   "ms": 5267,
+   "ms": 5904,
    "detail": "Midte: Ø 604054 N 6229471 · 56.1988, 10.6771 | højde ≈ 9 m | zoom 14.0"
   },
   {
    "id": "K03",
    "name": "Højdedata: Agri Bavnehøj ligger i det rette højdeinterval",
    "status": "OK",
-   "ms": 18,
+   "ms": 24,
    "detail": "Agri Bavnehøj ≈ 125 m (OSM: 137 m; model ±)"
   },
   {
    "id": "K04",
    "name": "Kortsøgning finder byer, veje og natursteder uden net",
    "status": "OK",
-   "ms": 5535,
+   "ms": 5720,
    "detail": "10 søgninger"
   },
   {
    "id": "K05",
    "name": "Lagstyring, signaturforklaring og dækningsinformation",
    "status": "OK",
-   "ms": 1523,
+   "ms": 1731,
    "detail": ""
   },
   {
    "id": "K06",
    "name": "Waypoints: gem, vis, eksportér/importér GPX, overlever genindlæsning",
    "status": "OK",
-   "ms": 7022,
+   "ms": 5037,
    "detail": "eksport+import OK"
   },
   {
    "id": "K07",
    "name": "Måling af afstand og enkel ruteplanlægning med gangtid",
    "status": "OK",
-   "ms": 3345,
+   "ms": 3780,
    "detail": ""
   },
   {
    "id": "K08",
    "name": "GPS-position vises med korrekte UTM-koordinater",
    "status": "OK",
-   "ms": 2564,
+   "ms": 2582,
    "detail": ""
   },
   {
    "id": "K09",
    "name": "Mørk tilstand og nat-tilstand skifter farver",
    "status": "OK",
-   "ms": 690,
-   "detail": "rgb(15, 22, 18) / rgb(18, 10, 8)"
+   "ms": 684,
+   "detail": "rgb(15, 21, 18) / rgb(17, 9, 7)"
   },
   {
    "id": "R01",
    "name": "Begrænset lager: hentning afvises tydeligt og ændrer intet",
    "status": "OK",
-   "ms": 652,
+   "ms": 722,
    "detail": "afvist ved 20 MB kvote"
   },
   {
    "id": "R02",
    "name": "Afbrudt opdatering (forbindelse mistes midt i hentning): gammel pakke forbliver aktiv og kortet virker",
    "status": "OK",
-   "ms": 5830,
+   "ms": 7069,
    "detail": "aktiv version uændret: 2026.10.26"
   },
   {
    "id": "R03",
    "name": "Korrupt pakkefil afvises via SHA-256 og efterlader den gamle pakke urørt",
    "status": "OK",
-   "ms": 7371,
+   "ms": 8406,
    "detail": "korruption opdaget"
   },
   {
    "id": "R04",
    "name": "Afbrudt service worker-opdatering (manglende fil) efterlader den eksisterende version i brug",
    "status": "OK",
-   "ms": 3039,
-   "detail": "cache uændret: sk-static-0.9.0-551ccb4c30"
+   "ms": 3036,
+   "detail": "cache uændret: sk-static-0.9.0-549f3536fc"
   },
   {
    "id": "R05",
@@ -172,49 +221,49 @@
    "name": "Under normal brug kontaktes kun appens egen server (ingen CDN, fonte eller eksterne API'er)",
    "status": "OK",
    "ms": 0,
-   "detail": "127.0.0.1:41565,"
+   "detail": "127.0.0.1:45017,"
   },
   {
    "id": "O01",
    "name": "OFFLINE (server lukket, browser genstartet): appen starter og viser forsiden",
    "status": "OK",
-   "ms": 168,
+   "ms": 191,
    "detail": ""
   },
   {
    "id": "O02",
    "name": "OFFLINE: alle kernekapitler og alle guides kan læses",
    "status": "OK",
-   "ms": 30679,
+   "ms": 30769,
    "detail": "101 guides + 17 kapitler"
   },
   {
    "id": "O03",
    "name": "OFFLINE: illustrationer indlæses (inline SVG, knob-tegninger)",
    "status": "OK",
-   "ms": 531,
+   "ms": 539,
    "detail": ""
   },
   {
    "id": "O04",
    "name": "OFFLINE: søgning, artsguide og kilder virker",
    "status": "OK",
-   "ms": 1011,
+   "ms": 1033,
    "detail": ""
   },
   {
    "id": "O05",
    "name": "OFFLINE: bogmærker, noter, nødkontakter og tjekliste overlever genstart",
    "status": "OK",
-   "ms": 526,
+   "ms": 536,
    "detail": ""
   },
   {
    "id": "O06",
    "name": "OFFLINE: kortet starter og vises i flere zoomniveauer",
    "status": "OK",
-   "ms": 16528,
-   "detail": "z8.6:2 z10:315 z12:28 z14:1778"
+   "ms": 18939,
+   "detail": "z8.6:2 z10:317 z12:28 z14:1794"
   },
   {
    "id": "O07",
@@ -227,15 +276,15 @@
    "id": "O08",
    "name": "OFFLINE: ny waypoint kan gemmes, og eksport virker",
    "status": "OK",
-   "ms": 3582,
+   "ms": 720,
    "detail": ""
   },
   {
    "id": "O09",
    "name": "OFFLINE: ingen fejlede eller eksterne netværkskald under hele offline-sessionen",
    "status": "OK",
-   "ms": 0,
-   "detail": "127.0.0.1:41565,, 0 fejlede"
+   "ms": 1,
+   "detail": "127.0.0.1:45017,, 0 fejlede"
   }
  ]
 }

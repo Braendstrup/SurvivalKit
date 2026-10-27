@@ -20,6 +20,16 @@ export const chapters = [
   { id: 'om', nr: 17, titel: 'Om appen, begrænsninger og offline', ikon: 'book', intro: 'Hvad der er testet, hvad der ikke er, og hvad appen aldrig kan love.' },
 ];
 
+// Temaer: forsidens indgange. Hvert kapitel ligger i præcis ét tema (valideres af tools/build.mjs).
+export const temaer = [
+  { id: 'akut', titel: 'Akut & førstehjælp', ikon: 'cross', intro: 'Prioriteter i en nødsituation, tilkald af hjælp og førstehjælp.', kapitler: ['nod', 'foerstehjaelp'] },
+  { id: 'ly-vand', titel: 'Ly, varme & vand', ikon: 'shelter', intro: 'Hold dig tør, varm og forsynet med sikkert drikkevand.', kapitler: ['ly', 'baal', 'vand'] },
+  { id: 'mad-natur', titel: 'Mad & natur', ikon: 'leaf', intro: 'Spiseligt og giftigt, sikker tilberedning og dansk natur og dyreliv.', kapitler: ['mad', 'arter', 'tilberedning', 'natur'] },
+  { id: 'vej-vejr', titel: 'Find vej & vejr', ikon: 'compass', intro: 'Kort, kompas og koordinater, vejr og rutevalg.', kapitler: ['navigation', 'vejr', 'kort'] },
+  { id: 'udstyr', titel: 'Udstyr & færdigheder', ikon: 'knot', intro: 'Knob og reb, udstyr og værktøj, tjeklister.', kapitler: ['knob', 'udstyr', 'lister'] },
+  { id: 'regler', titel: 'Regler & beredskab', ikon: 'book', intro: 'Dansk beredskab, nødnumre, regler i naturen og om appen.', kapitler: ['beredskab', 'om'] },
+];
+
 export const nodmenu = [
   { titel: 'Jeg er faret vild', guide: 'nod-faret-vild', ikon: 'compass', tekst: 'Stop, vurder, bliv eller gå' },
   { titel: 'Jeg mangler drikkevand', guide: 'vand-mangel', ikon: 'drop', tekst: 'Sikre kilder, behandling, undgå forurenet' },

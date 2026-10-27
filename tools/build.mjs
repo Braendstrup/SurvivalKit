@@ -19,7 +19,7 @@ for (const f of readdirSync(CONTENT).filter((n) => n.endsWith('.mjs') && !n.star
   mods[f] = await import(pathToFileURL(join(CONTENT, f)).href);
 }
 const chapters = [], guides = [], species = [], lists = [], sources = [];
-let nodmenu = [];
+let nodmenu = [], temaer = [];
 const figs = {};
 for (const [f, m] of Object.entries(mods)) {
   if (m.chapters) chapters.push(...m.chapters);
@@ -28,6 +28,7 @@ for (const [f, m] of Object.entries(mods)) {
   if (m.lists) lists.push(...m.lists);
   if (m.sources) sources.push(...m.sources);
   if (m.nodmenu) nodmenu = m.nodmenu;
+  if (m.temaer) temaer = m.temaer;
 }
 chapters.sort((a, b) => a.nr - b.nr);
 
@@ -78,6 +79,14 @@ for (const s of species) {
   for (const x of s.kilder || []) if (!srcIds.has(x)) err(`art ${s.id}: ukendt kilde ${x}`);
 }
 for (const l of lists) dupe(l.id, 'liste');
+// temaer: hvert (ikke-skjult) kapitel i præcis ét tema
+const inTema = new Map();
+for (const t of temaer) {
+  if (!t.id || !t.titel || !t.kapitler?.length) err(`tema ${t.id}: mangler id/titel/kapitler`);
+  for (const k of t.kapitler || []) { if (!chapIds.has(k)) err(`tema ${t.id}: ukendt kapitel ${k}`); if (inTema.has(k)) err(`kapitel ${k} ligger i både ${inTema.get(k)} og ${t.id}`); inTema.set(k, t.id); }
+}
+if (!temaer.length) err('ingen temaer defineret');
+for (const c of chapters) if (!c.skjul && !inTema.has(c.id)) err(`kapitel ${c.id}: ligger ikke i noget tema`);
 for (const n of nodmenu) if (!guides.find((g) => g.id === n.guide)) err(`nødmenu: ukendt guide ${n.guide}`);
 // interne links [[id]]
 const known = new Set([...ids, 'kort', 'arter', 'kilder', 'nod']);
@@ -95,7 +104,7 @@ const stats = {
 };
 mkdirSync(join(APP, 'data'), { recursive: true });
 const build = { version: pkg.version, date: new Date().toISOString().slice(0, 10), stats };
-writeFileSync(join(APP, 'data', 'content.json'), JSON.stringify({ build, chapters, guides, species, lists, sources, figs, nodmenu }));
+writeFileSync(join(APP, 'data', 'content.json'), JSON.stringify({ build, chapters, guides, species, lists, sources, figs, nodmenu, temaer }));
 console.log('indhold:', JSON.stringify(stats));
 
 // ---- service worker --------------------------------------------------------------------------------------------------------------

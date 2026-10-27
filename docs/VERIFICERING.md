@@ -1,6 +1,6 @@
 # Verificeringsstatus
 
-Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2026-10-26).
+Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2026-10-27).
 
 **Statusforklaring.** *Kontrolleret*: indholdet er sammenholdt med en navngiven primærkilde, som faktisk er læst på kontroldatoen. *Delvist*: kernepunkter er kontrolleret, andre dele er almen faglig viden. *Ikke*: skrevet ud fra almen viden; ingen kilde er kontrolleret mod. Hvert afsnit i appen viser sin status.
 
