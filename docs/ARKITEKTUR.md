@@ -9,7 +9,9 @@ tools/mapdata/*.py ──► app/map/pack/{djursland-vector.pmtiles, djursland-d
 
 app/ (statisk, ingen server-logik)
   index.html, css/app.css, js/{app,views,store,db,packs,geo,mapview,util}.js
-  js/views/{ui,home,guide,nod,gemte,search,settings,arter}.js  (én fil pr. sidetype; views.js samler dem)
+  js/views/{ui,home,guide,nod,gemte,search,settings,arter,chat}.js  (én fil pr. sidetype; views.js samler dem)
+  js/ai/{engine,models,rag,safety,sha256}.js  (AI-assistent: motorer, modeldownload, håndbogsopslag, sikkerhedsregler)
+  vendor/mediapipe/  (MediaPipe LLM Inference 0.10.30 – ikke i forhåndscachen; caches ved modeldownload)
   vendor/ (MapLibre, PMTiles – lokale kopier)   map/{style.js, glyphs/}
 ```
 
@@ -49,6 +51,7 @@ Bundmenu med fire faner: **Hjem · Nød · Kort · Gemte**. Toplinjen har tilbag
 | `#/kort` | Offlinekort |
 | `#/gemte` | Bogmærker, tjeklister med fremdrift, noter, nødkontakter |
 | `#/lister/:id` | Tjekliste |
+| `#/spoerg` | AI-assistent (åbnes fra Søg) |
 | `#/sog`, `#/arter`, `#/a/:id`, `#/kilder`, `#/indstillinger` | Søg, artsguide, art, kilder, indstillinger |
 | `#/mig`, `#/lister` | Omdirigeres til `#/indstillinger` og `#/gemte` (gamle links) |
 

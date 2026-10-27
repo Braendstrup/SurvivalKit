@@ -1,7 +1,8 @@
 /* Service worker – genereres af tools/build.mjs (rediger ikke app/sw.js direkte).
    Strategi: hele appen forhåndscaches under et versioneret cachenavn. En ny version installeres i en NY cache; den gamle
    bruges, indtil brugeren accepterer opdateringen. Fejler en fil under installation, afbrydes hele installationen og den
-   eksisterende version er uændret (atomisk opdatering). Kortpakkerne ligger i IndexedDB og håndteres af appen selv. */
+   eksisterende version er uændret (atomisk opdatering). Kortpakkerne ligger i IndexedDB og håndteres af appen selv.
+   AI-runtime (vendor/mediapipe) er ikke i forhåndscachen: appen lægger den i en separat cache (sk-ai-*), når en model hentes. */
 const VERSION = '__VERSION__';
 const CACHE = 'sk-static-' + VERSION;
 const PRECACHE = __PRECACHE__;
@@ -31,7 +32,7 @@ self.addEventListener('fetch', (e) => {
   if (url.pathname.includes('/map/pack/')) return;           // store kortpakker: direkte fra netværket (valgfri download)
   e.respondWith((async () => {
     const cache = await caches.open(CACHE);
-    const hit = await cache.match(req, { ignoreSearch: true });
+    const hit = await cache.match(req, { ignoreSearch: true }) || await caches.match(req, { ignoreSearch: true }); // fx AI-runtime (sk-ai-*), caches ved modeldownload
     if (hit) return hit;
     if (req.mode === 'navigate') { const idx = await cache.match('index.html'); if (idx) return idx; }
     try { return await fetch(req); }

@@ -7,7 +7,7 @@ const GROUPS = [['g', 'Guides'], ['kap', 'Kapitler'], ['a', 'Arter'], ['l', 'Tje
 
 export function pageSearch(q = '') {
   const el = h('div', { class: 'searchpage' });
-  const inp = h('input', { type: 'search', value: q, placeholder: 'Søg i hele håndbogen', 'aria-label': 'Søg', enterkeyhint: 'search' });
+  const inp = h('input', { type: 'search', value: q, placeholder: 'Søg eller stil et spørgsmål', 'aria-label': 'Søg', enterkeyhint: 'search' });
   const out = h('div');
   const draw = () => {
     const term = inp.value.trim();
@@ -18,8 +18,9 @@ export function pageSearch(q = '') {
       return;
     }
     const r = search(term);
+    const askRow = h('ul', { class: 'list askai' }, row('#/spoerg?q=' + encodeURIComponent(term), `Spørg AI: "${term}"`, 'Kort svar bygget på håndbogen – virker offline med en hentet model', null, 'chat'));
     history.replaceState(history.state, '', '#/sog?q=' + encodeURIComponent(term));
-    const parts = [h('p', { class: 'muted small' }, r.length ? `${r.length} resultater` : 'Ingen resultater')];
+    const parts = [askRow, h('p', { class: 'muted small' }, r.length ? `${r.length} resultater` : 'Ingen resultater')];
     for (const [type, label] of GROUPS) {
       const hits = r.filter((x) => x.type === type);
       if (!hits.length) continue;

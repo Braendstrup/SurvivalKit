@@ -8,7 +8,10 @@ export async function loadContent() {
   if (store.loaded) return store.content;
   const r = await fetch('data/content.json');
   if (!r.ok) throw new Error('Kunne ikke læse indholdet (' + r.status + ')');
-  const c = await r.json();
+  return setContent(await r.json());
+}
+// Bruges også af enhedstests (Node), der indlæser content.json direkte
+export function setContent(c) {
   store.content = c;
   for (const ch of c.chapters) store.byId.set(ch.id, { type: 'kap', item: ch });
   for (const g of c.guides) store.byId.set(g.id, { type: 'g', item: g });
@@ -31,9 +34,9 @@ export async function loadContent() {
 
 // ---- søgning ---------------------------------------------------------------------------------------
 export const foldText = (s) => norm(s).replace(/æ/g, 'ae').replace(/ø/g, 'o').replace(/å/g, 'aa').replace(/[éè]/g, 'e').replace(/ü/g, 'u');
-const tokens = (s) => foldText(s).split(/[^a-z0-9]+/).filter((t) => t.length > 1);
+export const tokens = (s) => foldText(s).split(/[^a-z0-9]+/).filter((t) => t.length > 1);
 
-function blockText(bl, out = []) {
+export function blockText(bl, out = []) {
   for (const b of bl || []) {
     if (b.x) out.push(b.x);
     if (b.title) out.push(b.title);

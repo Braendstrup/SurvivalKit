@@ -99,7 +99,7 @@ await test('F04', 'Alle arter kan åbnes; giftige/forsigtige arter viser advarsl
 });
 
 await test('F05', 'Søgning virker (guides, arter, danske tegn)', async () => {
-  const q = async (term) => { await go(page, 'sog'); await page.fill('input[type=search]', term); await page.waitForTimeout(200); return page.locator('main .list li').count(); };
+  const q = async (term) => { await go(page, 'sog'); await page.fill('input[type=search]', term); await page.waitForTimeout(200); return page.locator('main .list:not(.askai) li').count(); };
   for (const t of ['kogning', 'hugorm', 'pælestik', 'hyldebær', 'hypotermi', 'ramsløg', 'kompas', 'fluesvamp', 'strømafbrydelse']) assert((await q(t)) >= 1, 'ingen resultater for ' + t);
   assert((await q('xqzvbn')) === 0, 'nonsens bør give 0');
   return '9 søgninger';
@@ -173,7 +173,7 @@ await test('U03', 'Guide: Fremgangsmåde og Sikkerhed er åbne, øvrige afsnit f
 });
 
 await test('U04', 'Ingen vandret scroll ved 320–768 px på hovedsiderne', async () => {
-  const pages = ['', 'tema/akut', 'g/vand-kogning', 'g/knob-paelestik', 'nod', 'gemte', 'sog?q=vand', 'indstillinger', 'arter', 'a/' + content.species[0].id, 'lister/hjemmeberedskab'];
+  const pages = ['', 'tema/akut', 'g/vand-kogning', 'g/knob-paelestik', 'nod', 'gemte', 'sog?q=vand', 'spoerg', 'indstillinger', 'arter', 'a/' + content.species[0].id, 'lister/hjemmeberedskab'];
   const bad = [];
   for (const w of [320, 360, 390, 768]) {
     await page.setViewportSize({ width: w, height: 800 });
@@ -210,6 +210,79 @@ await test('U07', 'Bundmenu: 4 faner, og den aktive fane følger siden', async (
   await go(page, ''); assert(!(await page.locator('.top .back').isVisible()), 'ingen tilbage-pil på forsiden');
   return '';
 });
+
+// ================================================================================ AI-assistent (testmotor uden sprogmodel)
+const pAI = await ctx.newPage(); pAI.on('pageerror', (e) => pageErrors.push('AI-side: ' + e.message));
+await pAI.addInitScript(() => {
+  window.__skFakeAI = { msPerToken: 15, reply: (p) => {
+    const q = p.user.split('SPØRGSMÅL:')[1] || '';
+    if (/pælestik/i.test(q)) return 'Lav et lille øje i den stående part [1]. Før enden op gennem øjet [1].\n\n[egen viden] Øv knobet hjemme, før du skal bruge det.';
+    if (/hugorm/i.test(q)) return 'Hold personen i ro [1].\n\n[egen viden] Læg is på bidet.';
+    if (/langt svar/i.test(q)) return Array.from({ length: 80 }, (_, i) => 'ord' + i).join(' ');
+    return 'Kog vandet kraftigt i mindst 1 minut [1].';
+  } };
+});
+await pAI.goto(base()); await pAI.waitForFunction('window.__appReady', null, { timeout: 30000 });
+
+await test('A01', 'AI: "Spørg AI" fra søgning giver svar med kildelinks og mærket egen viden', async () => {
+  await go(pAI, 'sog'); await pAI.fill('input[type=search]', 'pælestik'); await pAI.waitForTimeout(150);
+  await pAI.click('.askai a'); await pAI.waitForSelector('.msg.ai .cite', { timeout: 10000 });
+  assert((await pAI.evaluate(() => location.hash)).startsWith('#/spoerg'), 'chat-route');
+  const href = await pAI.locator('.msg.ai .cite').first().getAttribute('href'); assert(href === '#/g/knob-paelestik', 'kildelink: ' + href);
+  assert(await pAI.locator('.msg.ai .ownknowledge:has-text("Ikke fra håndbogen")').isVisible(), 'egen viden ikke mærket');
+  assert((await pAI.locator('.msg.ai .sources a[href="#/g/knob-paelestik"]').count()) === 1, '"Bygger på" mangler');
+  assert(!/\bnull\b|undefined|\[object/.test(await pAI.locator('.msg.ai').last().innerText()), 'svaret viser null/undefined');
+  assert(!(await pAI.locator('button:has-text("Stop")').isVisible()), 'Stop-knap synlig, når intet genereres');
+  return '';
+});
+
+await test('A02', 'AI: nødord viser 112-boksen, før modellen svarer', async () => {
+  await pAI.evaluate(() => { window.__skFakeAI.msPerToken = 120; });
+  await go(pAI, 'spoerg?q=' + encodeURIComponent('min ven er bevidstløs, hvad gør jeg'));
+  await pAI.waitForSelector('.ai-112 a[href="tel:112"]', { timeout: 3000 });
+  const answered = await pAI.locator('.msg.ai .sources').count();
+  assert(answered === 0, '112-boksen kom først efter svaret');
+  await pAI.waitForSelector('.msg.ai .sources, .msg.ai .refused', { timeout: 20000 });
+  await pAI.evaluate(() => { window.__skFakeAI.msPerToken = 15; });
+  return '';
+});
+
+await test('A03', 'AI: på følsomt emne afvises svar med egen viden (vises aldrig)', async () => {
+  await go(pAI, 'spoerg'); await pAI.waitForSelector('textarea[aria-label="Spørgsmål"]');
+  await pAI.fill('textarea[aria-label="Spørgsmål"]', 'hvad gør jeg ved et hugormebid'); await pAI.press('textarea[aria-label="Spørgsmål"]', 'Enter');
+  await pAI.waitForSelector('.msg.ai .refused', { timeout: 10000 });
+  assert(!(await pAI.locator('.msg.ai').last().innerText()).includes('Læg is'), 'egen viden blev vist på følsomt emne');
+  assert((await pAI.locator('.msg.ai').last().locator('.sources a[href*="hugorm"]').count()) >= 1, 'link til hugormguide mangler');
+  return '';
+});
+
+await test('A04', 'AI: Stop afbryder svaret og markerer det som ufuldstændigt', async () => {
+  await pAI.evaluate(() => { window.__skFakeAI.msPerToken = 150; });
+  await pAI.fill('textarea[aria-label="Spørgsmål"]', 'giv mig et langt svar om knob'); await pAI.press('textarea[aria-label="Spørgsmål"]', 'Enter');
+  await pAI.waitForTimeout(900); await pAI.click('button:has-text("Stop")');
+  await pAI.waitForSelector('.msg.ai >> text=Stoppet', { timeout: 5000 });
+  assert(!(await pAI.locator('.msg.ai').last().innerText()).includes('ord79'), 'svaret blev ikke afbrudt');
+  await pAI.evaluate(() => { window.__skFakeAI.msPerToken = 15; });
+  return '';
+});
+
+await test('A05', 'AI: uden WebGPU vises en ærlig forklaring, og Indstillinger viser AI-status', async () => {
+  await go(page, 'spoerg'); await page.waitForSelector('.setup', { timeout: 10000 });
+  assert(/kan ikke køre AI-assistenten/i.test(await page.locator('.setup').innerText()), 'forklaring mangler');
+  assert((await page.locator('textarea[aria-label="Spørgsmål"]').isVisible()) === false, 'inputfelt bør være skjult uden model');
+  assert(!(await page.locator('button:has-text("Stop")').isVisible()) && !(await page.locator('button:has-text("Ny samtale")').isVisible()), 'Stop/Ny samtale synlige uden model');
+  await go(page, 'indstillinger'); await page.waitForSelector('text=WebGPU (kræves af Gemma)');
+  assert(/Hentet model\s*Ingen/.test(await page.locator('main').innerText()), 'modelstatus');
+  return '';
+});
+
+await test('A06', 'AI: appen henter intet modelrelateret, før brugeren vælger det', async () => {
+  const bad = [...seenHosts].filter((h) => h && h !== `127.0.0.1:${port}`);
+  assert(!bad.length, 'eksterne værter: ' + bad);
+  const cachesNow = await page.evaluate(() => caches.keys()); assert(!cachesNow.some((k) => k.startsWith('sk-ai-')), 'AI-runtime cachet uden download');
+  return 'kun ' + `127.0.0.1:${port}`;
+});
+await pAI.close();
 
 await test('F09', 'Kortpakke hentes med fremdrift, SHA-256-kontrol og aktiveres', async () => {
   await go(page, 'kort');
@@ -296,12 +369,20 @@ await test('K07', 'Måling af afstand og enkel ruteplanlægning med gangtid', as
   const box = await page.locator('#map').boundingBox();
   await page.mouse.click(box.x + box.width * 0.3, box.y + box.height * 0.15); await page.mouse.click(box.x + box.width * 0.6, box.y + box.height * 0.2);
   await page.waitForTimeout(500);
-  assert(/Samlet:[\s\S]*\d+(,\d+)? (m|km)/.test((await page.locator('.sheet').innerText())), 'afstand'); await page.click('.sheet button:has-text("Færdig")');
+  assert(/Samlet:[\s\S]*\d+(,\d+)? (m|km)/.test((await page.locator('.sheet').innerText())), 'afstand');
+  // X lukker panelet OG afslutter måletilstanden (knappen må ikke blive ved med at være markeret)
+  await page.click('.sheet .close');
+  assert(await page.locator('button[aria-label="Mål afstand"]').getAttribute('aria-pressed') === 'false', 'Mål afstand stadig markeret efter X');
+  await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.3); await page.waitForTimeout(400);
+  assert(!(await page.locator('.sheet:has-text("Samlet")').count()), 'måletilstand stadig aktiv efter X');
+  if (await page.locator('.sheet').count()) await page.click('.sheet .close');
   await page.click('button[aria-label="Planlæg rute"]');
   await page.mouse.click(box.x + box.width * 0.25, box.y + box.height * 0.12); await page.mouse.click(box.x + box.width * 0.7, box.y + box.height * 0.2);
   await page.waitForSelector('.sheet >> text=Gangtid', { timeout: 15000 });
   const t = await page.locator('.sheet').innerText(); assert(/Stigning/.test(t) && /min|t /.test(t), 'rute-statistik');
-  await page.click('.sheet button:has-text("Færdig")'); return '';
+  await page.click('.sheet .close');
+  assert(await page.locator('button[aria-label="Planlæg rute"]').getAttribute('aria-pressed') === 'false', 'Planlæg rute stadig markeret efter X');
+  return 'X afslutter måling og rute';
 });
 
 await test('K08', 'GPS-position vises med korrekte UTM-koordinater', async () => {
@@ -411,7 +492,7 @@ await test('O03', 'OFFLINE: illustrationer indlæses (inline SVG, knob-tegninger
   return '';
 });
 await test('O04', 'OFFLINE: søgning, artsguide og kilder virker', async () => {
-  await go(page, 'sog'); await page.fill('input[type=search]', 'vand'); await page.waitForTimeout(200); assert((await page.locator('main .list li').count()) >= 5, 'søgning');
+  await go(page, 'sog'); await page.fill('input[type=search]', 'vand'); await page.waitForTimeout(200); assert((await page.locator('main .list:not(.askai) li').count()) >= 5, 'søgning');
   await go(page, 'arter'); assert((await page.locator('main .list li').count()) === content.species.length, 'artsliste'); await go(page, 'kilder'); assert((await page.locator('main .src li').count()) >= 30, 'kilder');
   return '';
 });

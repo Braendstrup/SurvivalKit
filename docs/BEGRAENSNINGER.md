@@ -19,5 +19,12 @@ Opdateret sammen med den seneste testkørsel. Intet er markeret som testet, hvis
 - Højdeværdier er modelbaserede (±flere meter).
 - Appen forudsætter en moderne browser (MapLibre WebGL, IndexedDB, Service Worker, OffscreenCanvas).
 
+## AI-assistenten
+- En sprogmodel kan gengive håndbogen forkert eller udelade vigtige forbehold, selv med håndbogens tekst som grundlag. Derfor vises altid links til de guides, svaret bygger på – læs originalen ved alt vigtigt. Reglerne (afvisning på følsomme emner, 112 ved nødord) håndhæves af appen, men kan ikke garantere et korrekt svar.
+- Kræver WebGPU og meget hukommelse: E4B ca. 3,3 GB GPU-hukommelse (nyere telefoner), E2B mindre. Mange ældre telefoner og nogle browsere (fx Safari på ældre iOS) kan ikke køre modellen.
+- Modellen er kun afprøvet i headless Chromium med CPU-emuleret WebGPU (SwiftShader), ikke på en rigtig telefon (se TESTRESULTATER.md / tests/ai_real_results.json).
+- "En model der allerede er på telefonen" kan kun udnyttes, hvis browseren selv stiller den til rådighed (Chrome Prompt API); en webapp kan ikke bruge modeller i andre apps eller i styresystemet.
+- Samtaler gemmes ikke, og hvert spørgsmål besvares for sig (ingen hukommelse af tidligere spørgsmål i samtalen).
+
 ## Det appen aldrig kan love
-At have de nyeste regler, afbrændingsforbud, vejrudsigter eller beredskabsmeddelelser; at et sted på kortet er åbent/tilgængeligt/sikkert; at en plante eller svamp er sikker at spise; at et knob kan bære en person.
+At have de nyeste regler, afbrændingsforbud, vejrudsigter eller beredskabsmeddelelser; at et sted på kortet er åbent/tilgængeligt/sikkert; at en plante eller svamp er sikker at spise; at et knob kan bære en person; at et AI-svar er korrekt.

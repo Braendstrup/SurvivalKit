@@ -1,0 +1,3 @@
+@mediapipe/tasks-genai 0.10.30 (Google), Apache License 2.0 – https://www.npmjs.com/package/@mediapipe/tasks-genai
+Filer: genai_bundle.mjs, genai_wasm_internal.js, genai_wasm_internal.wasm (uændrede kopier fra npm-pakken).
+Bruges kun af den valgfrie AI-assistent; hentes til offlinebrug, når brugeren henter en sprogmodel.
