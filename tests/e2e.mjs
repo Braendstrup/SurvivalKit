@@ -296,12 +296,20 @@ await test('K07', 'Måling af afstand og enkel ruteplanlægning med gangtid', as
   const box = await page.locator('#map').boundingBox();
   await page.mouse.click(box.x + box.width * 0.3, box.y + box.height * 0.15); await page.mouse.click(box.x + box.width * 0.6, box.y + box.height * 0.2);
   await page.waitForTimeout(500);
-  assert(/Samlet:[\s\S]*\d+(,\d+)? (m|km)/.test((await page.locator('.sheet').innerText())), 'afstand'); await page.click('.sheet button:has-text("Færdig")');
+  assert(/Samlet:[\s\S]*\d+(,\d+)? (m|km)/.test((await page.locator('.sheet').innerText())), 'afstand');
+  // X lukker panelet OG afslutter måletilstanden (knappen må ikke blive ved med at være markeret)
+  await page.click('.sheet .close');
+  assert(await page.locator('button[aria-label="Mål afstand"]').getAttribute('aria-pressed') === 'false', 'Mål afstand stadig markeret efter X');
+  await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.3); await page.waitForTimeout(400);
+  assert(!(await page.locator('.sheet:has-text("Samlet")').count()), 'måletilstand stadig aktiv efter X');
+  if (await page.locator('.sheet').count()) await page.click('.sheet .close');
   await page.click('button[aria-label="Planlæg rute"]');
   await page.mouse.click(box.x + box.width * 0.25, box.y + box.height * 0.12); await page.mouse.click(box.x + box.width * 0.7, box.y + box.height * 0.2);
   await page.waitForSelector('.sheet >> text=Gangtid', { timeout: 15000 });
   const t = await page.locator('.sheet').innerText(); assert(/Stigning/.test(t) && /min|t /.test(t), 'rute-statistik');
-  await page.click('.sheet button:has-text("Færdig")'); return '';
+  await page.click('.sheet .close');
+  assert(await page.locator('button[aria-label="Planlæg rute"]').getAttribute('aria-pressed') === 'false', 'Planlæg rute stadig markeret efter X');
+  return 'X afslutter måling og rute';
 });
 
 await test('K08', 'GPS-position vises med korrekte UTM-koordinater', async () => {

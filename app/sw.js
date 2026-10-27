@@ -2,7 +2,7 @@
    Strategi: hele appen forhåndscaches under et versioneret cachenavn. En ny version installeres i en NY cache; den gamle
    bruges, indtil brugeren accepterer opdateringen. Fejler en fil under installation, afbrydes hele installationen og den
    eksisterende version er uændret (atomisk opdatering). Kortpakkerne ligger i IndexedDB og håndteres af appen selv. */
-const VERSION = '0.9.0-549f3536fc';
+const VERSION = '0.9.0-61b51dcb5f';
 const CACHE = 'sk-static-' + VERSION;
 const PRECACHE = [
  "./",

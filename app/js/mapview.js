@@ -128,7 +128,9 @@ export async function pageMap(ctx) {
   ];
   root.append(...ui);
   const closeSheet = () => sheetHost.replaceChildren();
-  const sheet = (...kids) => { sheetHost.replaceChildren(h('div', { class: 'sheet', role: 'dialog' }, h('button', { class: 'mbtn close', 'aria-label': 'Luk', onclick: closeSheet }, ic('x')), ...kids)); };
+  // Luk (X) afslutter også en aktiv måle-/rutetilstand, så værktøjsknappen ikke bliver ved med at være markeret
+  const closeX = () => { if (state.mode !== 'none') setMode(state.mode); else closeSheet(); document.activeElement?.blur?.(); };
+  const sheet = (...kids) => { sheetHost.replaceChildren(h('div', { class: 'sheet', role: 'dialog' }, h('button', { class: 'mbtn close', 'aria-label': 'Luk', onclick: closeX }, ic('x')), ...kids)); };
 
   // ---- søgning -----------------------------------------------------------------------------------------------------------
   function searchBox() {

@@ -12,7 +12,7 @@ Indholdstest: 101 guides, 31 arter, 38 kilder – OK
 
 ## End-to-end (browser)
 
-Kørt 2026-10-27T22:48:53.036Z; 40/40 bestået; varighed 190 s.
+Kørt 2026-10-27T23:10:56.295Z; 40/40 bestået; varighed 177 s.
 
 | ID | Test | Resultat | Detalje |
 |---|---|---|---|
@@ -38,15 +38,15 @@ Kørt 2026-10-27T22:48:53.036Z; 40/40 bestået; varighed 190 s.
 | K04 | Kortsøgning finder byer, veje og natursteder uden net | OK | 10 søgninger |
 | K05 | Lagstyring, signaturforklaring og dækningsinformation | OK |  |
 | K06 | Waypoints: gem, vis, eksportér/importér GPX, overlever genindlæsning | OK | eksport+import OK |
-| K07 | Måling af afstand og enkel ruteplanlægning med gangtid | OK |  |
+| K07 | Måling af afstand og enkel ruteplanlægning med gangtid | OK | X afslutter måling og rute |
 | K08 | GPS-position vises med korrekte UTM-koordinater | OK |  |
 | K09 | Mørk tilstand og nat-tilstand skifter farver | OK | rgb(15, 21, 18) / rgb(17, 9, 7) |
 | R01 | Begrænset lager: hentning afvises tydeligt og ændrer intet | OK | afvist ved 20 MB kvote |
 | R02 | Afbrudt opdatering (forbindelse mistes midt i hentning): gammel pakke forbliver aktiv og kortet virker | OK | aktiv version uændret: 2026.10.26 |
 | R03 | Korrupt pakkefil afvises via SHA-256 og efterlader den gamle pakke urørt | OK | korruption opdaget |
-| R04 | Afbrudt service worker-opdatering (manglende fil) efterlader den eksisterende version i brug | OK | cache uændret: sk-static-0.9.0-549f3536fc |
+| R04 | Afbrudt service worker-opdatering (manglende fil) efterlader den eksisterende version i brug | OK | cache uændret: sk-static-0.9.0-61b51dcb5f |
 | R05 | Ingen JavaScript-fejl i sessionen (online fase) | OK |  |
-| R06 | Under normal brug kontaktes kun appens egen server (ingen CDN, fonte eller eksterne API'er) | OK | 127.0.0.1:45017, |
+| R06 | Under normal brug kontaktes kun appens egen server (ingen CDN, fonte eller eksterne API'er) | OK | 127.0.0.1:33511, |
 | O01 | OFFLINE (server lukket, browser genstartet): appen starter og viser forsiden | OK |  |
 | O02 | OFFLINE: alle kernekapitler og alle guides kan læses | OK | 101 guides + 17 kapitler |
 | O03 | OFFLINE: illustrationer indlæses (inline SVG, knob-tegninger) | OK |  |
@@ -55,7 +55,7 @@ Kørt 2026-10-27T22:48:53.036Z; 40/40 bestået; varighed 190 s.
 | O06 | OFFLINE: kortet starter og vises i flere zoomniveauer | OK | z8.6:2 z10:317 z12:28 z14:1794 |
 | O07 | OFFLINE: kortsøgning, højde og lokalt gemte waypoints kan åbnes | OK |  |
 | O08 | OFFLINE: ny waypoint kan gemmes, og eksport virker | OK |  |
-| O09 | OFFLINE: ingen fejlede eller eksterne netværkskald under hele offline-sessionen | OK | 127.0.0.1:45017,, 0 fejlede |
+| O09 | OFFLINE: ingen fejlede eller eksterne netværkskald under hele offline-sessionen | OK | 127.0.0.1:33511,, 0 fejlede |
 
 **Offline-test:** fase 4 (O01–O09) lukker den lokale webserver helt og genstarter browseren med samme profil. Appen skal da starte fra service worker-cachen og IndexedDB. Netværksværter og fejlede kald logges (O09).
 
