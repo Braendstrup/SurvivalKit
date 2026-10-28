@@ -4,18 +4,21 @@ import * as db from './db.js';
 import * as packs from './packs.js';
 import { coordTexts, haversine, pathLength, fmtDist, naismith, fmtMinutes, toGPX, fromGPX, bearing } from './geo.js';
 import { buildStyle, makePoiImages, maskGeoJSON, POI } from '../map/style.js';
+import { buildOmtStyle, POI_KEY, poiKeyOf } from '../map/style-omt.js';
+import * as areas from './areas.js';
 import { ic, toast } from './views.js';
 
-const SCRIPTS = ['vendor/pmtiles.js', 'vendor/maplibre-gl.js'];
+const SCRIPTS = ['vendor/pmtiles.js', 'vendor/maplibre-gl.js', 'vendor/mlcontour.js'];
 let libsLoaded = null;
 function loadLibs() {
   if (libsLoaded) return libsLoaded;
   if (!document.querySelector('link[data-maplibre]')) document.head.append(h('link', { rel: 'stylesheet', href: 'vendor/maplibre-gl.css', 'data-maplibre': '' }));
-  libsLoaded = SCRIPTS.reduce((p, src) => p.then(() => globalThis[src.includes('pmtiles') ? 'pmtiles' : 'maplibregl'] ? null : new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Kunne ikke indlæse ' + src)); document.head.append(s); })), Promise.resolve());
+  const GLOBAL = { 'vendor/pmtiles.js': 'pmtiles', 'vendor/maplibre-gl.js': 'maplibregl', 'vendor/mlcontour.js': 'mlcontour' };
+  libsLoaded = SCRIPTS.reduce((p, src) => p.then(() => globalThis[GLOBAL[src]] ? null : new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Kunne ikke indlæse ' + src)); document.head.append(s); })), Promise.resolve());
   return libsLoaded;
 }
 
-let protocolsAdded = false, flatDem = null;
+let protocolsAdded = false, flatDem = null, demSource = null;
 async function emptyDemTile() {
   if (!flatDem) { const c = new OffscreenCanvas(256, 256); const g = c.getContext('2d'); g.fillStyle = 'rgb(128,0,0)'; g.fillRect(0, 0, 256, 256); flatDem = await (await c.convertToBlob({ type: 'image/png' })).arrayBuffer(); }
   return flatDem.slice(0);
@@ -30,6 +33,20 @@ function addProtocols() {
     if (t) return { data: t.data.slice(0) };
     return { data: m[1] === 'dem' ? await emptyDemTile() : new ArrayBuffer(0) };
   });
+  // selvvalgte områder: vektorfliser fra IndexedDB (aldrig fra nettet; mangler en flise, er den tom)
+  maplibregl.addProtocol('ofm', async (p) => {
+    const m = p.url.match(/^ofm:\/\/(\d+)\/(\d+)\/(\d+)/);
+    const d = m ? await areas.tileData('ofm', +m[1], +m[2], +m[3]) : null;
+    return { data: d ? d.slice(0) : new ArrayBuffer(0) };
+  });
+  // højdefliser til områder: maplibre-contour (i hovedtråden) læser fra IndexedDB; samme cache bruges til skyggerelief
+  demSource = new mlcontour.DemSource({ url: 'idbdem://{z}/{x}/{y}', encoding: 'terrarium', maxzoom: 12, worker: false, cacheSize: 120 });
+  demSource.manager.getTile = async (url) => {
+    const m = url.match(/(\d+)\/(\d+)\/(\d+)$/);
+    const d = await areas.tileData('dem', +m[1], +m[2], +m[3]);
+    return { data: new Blob([d && d.byteLength ? d : await emptyDemTile()], { type: 'image/png' }) };
+  };
+  demSource.setupMaplibre(maplibregl);
   // glyphs: lokale filer; mangler et tegnområde returneres tomme glyphs i stedet for en fejl
   maplibregl.addProtocol('djg', async (p) => {
     const m = p.url.match(/^djg:\/\/([^/]+)\/(\d+-\d+)/);
@@ -44,7 +61,7 @@ const GROUPS = {
   water: ['water', 'waterway', 'lbl-water'], contour: ['contour-minor', 'contour-major', 'lbl-contour'], hillshade: ['hillshade'], building: ['building'],
   poi: ['poi'], protected: ['protected-fill', 'protected-line'], labels: ['lbl-area', 'lbl-road', 'place-peak', 'place-small', 'place-village', 'place-town'], boundary: ['boundary'],
 };
-const GROUP_LABEL = { road: 'Veje og jernbane', path: 'Stier og grusveje', forest: 'Skov', landuse: 'Øvrig arealanvendelse', water: 'Søer og vandløb', contour: 'Højdekurver (5 m / 25 m)', hillshade: 'Skyggerelief (terræn)', building: 'Bygninger (zoom 14+)', poi: 'Punkter (faciliteter)', protected: 'Beskyttede områder (OSM)', labels: 'Navne', boundary: 'Kommunegrænse Djursland' };
+const GROUP_LABEL = { road: 'Veje og jernbane', path: 'Stier og grusveje', forest: 'Skov', landuse: 'Øvrig arealanvendelse', water: 'Søer og vandløb', contour: 'Højdekurver', hillshade: 'Skyggerelief (terræn)', building: 'Bygninger (zoom 14+)', poi: 'Punkter (faciliteter)', protected: 'Beskyttede områder (OSM)', labels: 'Navne', boundary: 'Grænser' };
 const POI_GROUPS = {
   vand: ['Vand (drikkevand, kilder)', ['drinking_water', 'spring']], ly: ['Ly, bål og overnatning', ['shelter', 'firepit', 'camp_site', 'picnic']],
   hjaelp: ['Hjælp (sygehus, politi, brand, hjertestarter, apotek)', ['hospital', 'police', 'fire_station', 'aed', 'pharmacy']],
@@ -57,37 +74,57 @@ const isDark = () => { const t = document.documentElement.dataset.theme; return 
 const KIND_LABEL = { 'place:city': 'By', 'place:town': 'By', 'place:village': 'Landsby', 'place:hamlet': 'Bebyggelse', 'place:suburb': 'Bydel', 'place:locality': 'Sted', 'place:island': 'Ø', 'place:islet': 'Holm', peak: 'Højde', road: 'Vej', waterway: 'Vandløb', water: 'Sø/vand', protected: 'Beskyttet område', 'natural:bay': 'Bugt', 'natural:cape': 'Pynt', 'natural:beach': 'Strand', 'land:forest': 'Skov', 'land:heath': 'Hede', 'land:wetland': 'Vådområde', 'land:green': 'Park/grønt', 'land:beach': 'Strand' };
 const kindLabel = (k) => KIND_LABEL[k] || (k.startsWith('poi:') ? (POI[k.slice(4)]?.label.split(' (')[0] || 'Punkt') : k);
 
-export async function pageMap(ctx) {
+export async function pageMap(ctx, sub) {
+  if (sub === 'nyt') return pageNewArea(ctx);
   const root = h('div', { class: 'mapwrap' });
   const state = { cleanup: [], mode: 'none', measure: [], route: [], watch: null, gpsPos: null, wp: [], wpMarkers: [] };
   const cleanup = () => { state.cleanup.forEach((f) => { try { f(); } catch { /* ignoreres */ } }); if (state.watch != null) navigator.geolocation.clearWatch(state.watch); window.__skmap = null; };
 
+  // Hvilket kort? Djursland-pakken eller et selvvalgt område (valget huskes)
   const manifestActive = await packs.getActive();
-  if (!manifestActive || ctx.forceDownload) {
+  const ready = (await areas.listAreas()).filter((a) => a.ready);
+  let selId = await db.kvGet('map.source', 'djursland');
+  let area = selId !== 'djursland' ? ready.find((a) => a.id === selId) : null;
+  if (!area && (!manifestActive || ctx.forceDownload)) {
     const forced = ctx.forceDownload; ctx.forceDownload = null; root.classList.add('dlmode');
-    root.append(downloadCard(root, ctx, async () => { cleanup(); ctx.rerender(); }, false, forced));
+    root.append(downloadCard(root, ctx, async () => { await db.kvSet('map.source', 'djursland'); cleanup(); ctx.rerender(); }, false, forced),
+      h('div', { class: 'card', style: 'margin:1rem' }, h('h2', null, 'Andre steder'), h('p', null, 'Hent et offlinekort over et selvvalgt område – hvor som helst i verden (ca. op til 50 × 50 km pr. område).'),
+        h('div', { class: 'btnrow' }, h('a', { class: 'btn secondary', href: '#/kort/nyt' }, ic('plus'), 'Hent et andet område'),
+          ready.length ? h('button', { class: 'btn secondary', onclick: async () => { await db.kvSet('map.source', ready[0].id); cleanup(); ctx.rerender(); } }, 'Vis ' + ready[0].name) : null)));
     return { node: root, cleanup, fullmap: true };
   }
   try { await loadLibs(); } catch (e) { root.append(h('div', { class: 'card' }, h('p', null, 'Kortbiblioteket kunne ikke indlæses: ' + e.message))); return { node: root, cleanup, fullmap: true }; }
-  let pk;
-  try { pk = await packs.openActive(); } catch (e) {
-    root.classList.add('dlmode');
-    root.append(h('div', { class: 'card' }, h('h2', null, 'Kortpakken kan ikke åbnes'), h('p', null, e.message), downloadCard(root, ctx, () => { cleanup(); ctx.rerender(); }, true)));
-    return { node: root, cleanup, fullmap: true };
-  }
   addProtocols();
-  const man = pk.manifest;
-  const saved = await db.kvGet('map.state', null);
+  let pk = null;
+  if (!area) {
+    try { pk = await packs.openActive(); } catch (e) {
+      root.classList.add('dlmode');
+      root.append(h('div', { class: 'card' }, h('h2', null, 'Kortpakken kan ikke åbnes'), h('p', null, e.message), downloadCard(root, ctx, () => { cleanup(); ctx.rerender(); }, true)));
+      return { node: root, cleanup, fullmap: true };
+    }
+  }
+  const dark = isDark();
   const vis = (await db.kvGet('map.vis', {})) || {};
   const poiVis = (await db.kvGet('map.poivis', {})) || {};
+  // Fælles beskrivelse af det valgte kort, så resten af kortsiden er ens for Djursland og områder
+  const src = area ? {
+    id: area.id, name: area.name, bbox: area.bbox, area, search: area.names || [],
+    style: buildOmtStyle({ dark, bounds: area.bbox, vis, contourUrl: demSource.contourProtocolUrl({ thresholds: { 10: [50, 250], 12: [25, 100], 13: [10, 50], 14: [5, 25] }, elevationKey: 'ele', levelKey: 'level', contourLayer: 'contours', buffer: 1 }), demUrl: demSource.sharedDemProtocolUrl }),
+    elevationAt: makeAreaElevation(), poiKey: poiKeyOf, poiFilter: (on) => ['in', POI_KEY, ['literal', on]], minZoom: 6,
+  } : {
+    id: 'djursland', name: 'Djursland', bbox: pk.manifest.bbox, search: pk.search?.items || [],
+    style: buildStyle({ dark, bounds: pk.manifest.bbox, vis }), elevationAt: packs.elevationAt, poiKey: (p) => p.class, poiFilter: (on) => ['in', ['get', 'class'], ['literal', on]], minZoom: 7,
+  };
+  const man = { bbox: src.bbox };
+  const saved = await db.kvGet('map.state.' + src.id, null) || (src.id === 'djursland' ? await db.kvGet('map.state', null) : null);
+  const cx = (src.bbox[0] + src.bbox[2]) / 2, cy = (src.bbox[1] + src.bbox[3]) / 2;
 
   const mapDiv = h('div', { id: 'map' });
   root.append(mapDiv);
-  const dark = isDark();
   const map = new maplibregl.Map({
-    container: mapDiv, style: buildStyle({ dark, bounds: man.bbox, vis }),
-    center: saved?.center || [10.6, 56.3], zoom: saved?.zoom ?? 9.5, bearing: saved?.bearing || 0,
-    minZoom: 7, maxZoom: 18.5, maxBounds: [[man.bbox[0] - 1.2, man.bbox[1] - 0.8], [man.bbox[2] + 1.2, man.bbox[3] + 0.8]],
+    container: mapDiv, style: src.style,
+    center: saved?.center || [cx, cy], zoom: saved?.zoom ?? (area ? 11 : 9.5), bearing: saved?.bearing || 0,
+    minZoom: src.minZoom, maxZoom: 18.5, maxBounds: [[man.bbox[0] - 1.2, man.bbox[1] - 0.8], [man.bbox[2] + 1.2, man.bbox[3] + 0.8]],
     attributionControl: { compact: true }, pitchWithRotate: false, dragRotate: true, touchPitch: false, fadeDuration: 0,
   });
   window.__skmap = map; // bruges af automatiske tests
@@ -98,7 +135,7 @@ export async function pageMap(ctx) {
 
   const poiFilterUpdate = () => {
     const on = Object.entries(POI_CLASS_GROUP).filter(([, g]) => poiVis[g] !== false).map(([c]) => c);
-    map.setFilter('poi', ['in', ['get', 'class'], ['literal', on]]);
+    map.setFilter('poi', src.poiFilter(on));
   };
   map.once('style.load', () => {
     for (const [k, v] of Object.entries(makePoiImages(dark))) map.addImage(k, v.data, { pixelRatio: v.pixelRatio });
@@ -107,8 +144,8 @@ export async function pageMap(ctx) {
   });
   map.on('error', (e) => { if (e?.error?.message && !/Failed to fetch|aborted/i.test(e.error.message)) console.warn('Kortfejl:', e.error.message); });
   state.cleanup.push(() => map.remove());
-  const ready = new Promise((r) => map.once('load', r));
-  window.__skmapReady = ready;
+  const loaded = new Promise((r) => map.once('load', r));
+  window.__skmapReady = loaded; window.__skmapSource = src.id;
 
   // ---- UI-elementer ------------------------------------------------------------------------------------------------
   const sheetHost = h('div'); const crosshair = h('div', { class: 'crosshair', 'aria-hidden': 'true' });
@@ -134,9 +171,10 @@ export async function pageMap(ctx) {
 
   // ---- søgning -----------------------------------------------------------------------------------------------------------
   function searchBox() {
-    const inp = h('input', { type: 'search', placeholder: 'Søg by, vej, sted … (offline)', 'aria-label': 'Søg på kortet', autocomplete: 'off' });
+    const inp = h('input', { type: 'search', placeholder: `Søg i ${src.name} …`, 'aria-label': 'Søg på kortet', autocomplete: 'off' });
+    const pickBtn = h('button', { class: 'mbtn areapick', 'aria-label': 'Vælg kortområde (nu: ' + src.name + ')', title: 'Kortområde: ' + src.name, onclick: () => openAreas() }, ic('map'));
     const res = h('div', { class: 'mapresults', hidden: true });
-    const idx = pk.search?.items || [];
+    const idx = src.search;
     const folded = idx.map((e) => fold(e[0]));
     inp.addEventListener('input', debounce(() => {
       const q = fold(inp.value.trim());
@@ -145,10 +183,10 @@ export async function pageMap(ctx) {
       for (let i = 0; i < idx.length && hits.length < 60; i++) if (folded[i].includes(q)) hits.push([i, folded[i].startsWith(q) ? 0 : 1]);
       hits.sort((a, b) => a[1] - b[1]);
       res.replaceChildren(...hits.slice(0, 25).map(([i]) => { const e = idx[i]; return h('button', { onclick: () => { goTo(e[2], e[3], 14.5, e[0]); res.hidden = true; inp.blur(); } }, h('span', null, e[0]), h('small', null, kindLabel(e[1]) + (e[4] ? ' · ' + e[4] + ' m' : ''))); }));
-      if (!hits.length) res.replaceChildren(h('button', { disabled: true }, 'Ingen resultater i det hentede område'));
+      if (!hits.length) res.replaceChildren(h('button', { disabled: true }, 'Ingen resultater i ' + src.name));
       res.hidden = false;
     }, 120));
-    return h('div', null, h('div', { class: 'mapsearch' }, inp), res);
+    return h('div', null, h('div', { class: 'mapsearch' }, pickBtn, inp), res);
   }
   function goTo(lon, lat, z, label) {
     map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), z), duration: 600 });
@@ -194,11 +232,12 @@ export async function pageMap(ctx) {
     const elevEl = h('dd', null, 'beregner …');
     sheet(h('h2', null, 'Valgt punkt'), coordBlock(pt, [h('dt', null, 'Højde (model)'), elevEl]),
       h('div', { class: 'btnrow' }, h('button', { class: 'btn', onclick: () => saveWaypoint(pt) }, ic('pin'), 'Gem som waypoint'), h('button', { class: 'btn secondary', onclick: () => { marker = null; setUser(); closeSheet(); } }, 'Fjern markering')));
-    const el = await packs.elevationAt(pt.lon, pt.lat).catch(() => null);
+    const el = await src.elevationAt(pt.lon, pt.lat).catch(() => null);
     elevEl.textContent = el == null ? 'ingen højdedata her' : `ca. ${Math.round(el)} m (modelbaseret, usikkerhed typisk flere meter)`;
   }
   function openPoi(f, pt) {
-    const p = f.properties, def = POI[p.class] || { label: p.class };
+    const p = f.properties, key = src.poiKey(p), def = POI[key] || { label: key };
+    p.name = p['name:da'] || p['name:latin'] || p.name;
     const coords = f.geometry.coordinates;
     sheet(h('h2', null, p.name || def.label.split(' (')[0]), h('p', null, h('span', { class: 'badge warn' }, 'OSM-markeret – ikke verificeret'), def.label),
       p.note ? h('p', null, 'Note i OSM: ' + p.note) : null, p.shelter_type ? h('p', null, 'Type: ' + p.shelter_type) : null, p.access ? h('p', null, 'Adgang (OSM): ' + p.access) : null,
@@ -223,7 +262,7 @@ export async function pageMap(ctx) {
       const n = Math.max(2, Math.ceil(dist / 60)); let prev = null, a = 0, dsc = 0;
       for (let k = 0; k <= n; k++) {
         const lon = pts[i - 1].lon + (pts[i].lon - pts[i - 1].lon) * k / n, lat = pts[i - 1].lat + (pts[i].lat - pts[i - 1].lat) * k / n;
-        const el = await packs.elevationAt(lon, lat).catch(() => null);
+        const el = await src.elevationAt(lon, lat).catch(() => null);
         if (el != null && prev != null) { const dz = el - prev; if (dz > 0) a += dz; else dsc -= dz; }
         if (el != null) prev = el;
       }
@@ -258,7 +297,7 @@ export async function pageMap(ctx) {
   async function saveWaypoint(pt, name) {
     const nm = name || prompt('Navn på waypoint', 'Punkt ' + (state.wp.length + 1));
     if (nm == null) return;
-    const el = await packs.elevationAt(pt.lon, pt.lat).catch(() => null);
+    const el = await src.elevationAt(pt.lon, pt.lat).catch(() => null);
     const w = { id: uid(), name: nm || 'Punkt', lon: pt.lon, lat: pt.lat, ele: el == null ? null : Math.round(el), note: '', time: Date.now() };
     const ok = await db.wpPut(w); await loadWp(); toast(ok ? 'Waypoint gemt lokalt' : 'Kunne ikke gemme permanent – ligger kun midlertidigt');
     if (sheetHost.firstChild) openWaypoints();
@@ -327,6 +366,7 @@ export async function pageMap(ctx) {
       h('p', { class: 'small muted' }, 'Manglende symbol betyder ikke, at noget ikke findes: kortet viser kun det, der er registreret i OpenStreetMap. Det angiver aldrig, at et sted er åbent, tilgængeligt, i funktion, lovligt at overnatte eller sikkert at drikke fra.'));
   }
   async function openData() {
+    if (area) return openAreaData();
     const a = await packs.getActive(); const m = a.manifest;
     const upd = h('p', { class: 'small muted' }, navigator.onLine ? 'Tjekker for opdatering …' : 'Offline – kan ikke tjekke for opdateringer.');
     sheet(h('h2', null, 'Kortdata og dækning'),
@@ -345,6 +385,31 @@ export async function pageMap(ctx) {
     }).catch(() => { upd.textContent = 'Kunne ikke tjekke for opdatering.'; });
   }
 
+  function openAreaData() {
+    const b = area.bbox;
+    sheet(h('h2', null, 'Kortdata og dækning'),
+      h('div', { class: 'stat' }, h('span', null, 'Område'), h('strong', null, area.name)),
+      h('div', { class: 'stat' }, h('span', null, 'Hentet lokalt'), h('strong', null, fmtDate(area.finished || area.created))),
+      h('div', { class: 'stat' }, h('span', null, 'Størrelse'), h('strong', null, `${fmtMB(area.bytes)} · ${area.tiles} fliser`)),
+      h('div', { class: 'stat' }, h('span', null, 'Dækning (WGS84)'), h('strong', null, `${b[0].toFixed(3)}–${b[2].toFixed(3)} °Ø, ${b[1].toFixed(3)}–${b[3].toFixed(3)} °N`)),
+      h('div', { class: 'stat' }, h('span', null, 'Zoomniveauer lokalt'), h('strong', null, 'vektor z6–14, terræn z7–12; zoom 15–18 er forstørrelse')),
+      h('div', { class: 'stat' }, h('span', null, 'Ikke hentet'), h('strong', null, 'alt uden for det markerede område (mørkt)')),
+      h('p', { class: 'small' }, `Kilder: ${area.source} (OpenMapTiles-skema; © OpenStreetMap-bidragydere, ODbL) · højdedata: AWS Terrain Tiles (SRTM, EU-DEM m.fl.).`),
+      h('p', { class: 'small muted' }, 'Kendte begrænsninger: højdekurver beregnes på enheden ud fra en grov højdemodel (ca. 30–40 m opløsning) og er kun vejledende. Stier, punkter og bygninger stammer fra frivillige i OpenStreetMap og kan være forældede eller mangle. Navne i andre skriftsystemer kan mangle (kun latinske tegn er gemt lokalt).'),
+      h('div', { class: 'btnrow' }, h('button', { class: 'btn secondary small', onclick: async () => { if (!confirm(`Slet området "${area.name}"?`)) return; cleanup(); await areas.deleteArea(area.id); await db.kvSet('map.source', 'djursland'); toast('Området er slettet'); ctx.rerender(); } }, 'Slet område')));
+  }
+  async function openAreas() {
+    const list = await areas.listAreas(); const djl = await packs.getActive();
+    const pick = async (id) => { await db.kvSet('map.source', id); cleanup(); ctx.rerender(); };
+    const item = (id, name, sub, onclick, current) => h('li', null, h('a', { href: '#', onclick: (e) => { e.preventDefault(); onclick(); } }, h('span', { class: 'rt' }, h('b', null, name), h('small', null, sub)), current ? h('span', { class: 'badge ok' }, 'Vises') : ic('chevron', 'ic chev')));
+    sheet(h('h2', null, 'Kortområder'),
+      h('ul', { class: 'list' },
+        item('djursland', 'Djursland', djl ? `Kortpakke v${djl.version} · ${fmtMB(djl.manifest.totalBytes)}` : 'Ikke hentet – tryk for at hente', () => pick('djursland'), src.id === 'djursland'),
+        list.map((a) => item(a.id, a.name, a.ready ? `${fmtMB(a.bytes)} · hentet ${new Date(a.finished || a.created).toLocaleDateString('da-DK')}` : 'Ufuldstændig – tryk for at genoptage', () => (a.ready ? pick(a.id) : (location.hash = '#/kort/nyt?resume=' + a.id)), src.id === a.id))),
+      h('div', { class: 'btnrow' }, h('a', { class: 'btn', href: '#/kort/nyt' }, ic('plus'), 'Hent nyt område')),
+      h('p', { class: 'small muted' }, 'Nye områder hentes fra OpenFreeMap (OpenStreetMap-data) og AWS (højdedata) og virker derefter uden net.'));
+  }
+
   // ---- statuslinje og tilstand ----------------------------------------------------------------------------------------------------
   const updInfo = async () => {
     const c = map.getCenter(); const t = coordTexts(c.lng, c.lat);
@@ -353,17 +418,17 @@ export async function pageMap(ctx) {
     const inside = c.lng >= man.bbox[0] && c.lng <= man.bbox[2] && c.lat >= man.bbox[1] && c.lat <= man.bbox[3];
     infoZoom.textContent = `zoom ${z.toFixed(1)}${z > 14 ? ' (forstørret)' : ''}${inside ? '' : ' · UDEN FOR HENTET OMRÅDE'}`;
     infoZoom.style.fontWeight = inside ? '' : '700';
-    const el = inside ? await packs.elevationAt(c.lng, c.lat).catch(() => null) : null;
+    const el = inside ? await src.elevationAt(c.lng, c.lat).catch(() => null) : null;
     infoElev.textContent = el == null ? (inside ? 'højde: ingen data' : '') : `højde ≈ ${Math.round(el)} m`;
   };
   const updDeb = debounce(updInfo, 150);
   map.on('move', () => { northBtn.firstChild.style.transform = `rotate(${-map.getBearing()}deg)`; updDeb(); });
-  map.on('moveend', debounce(() => { const c = map.getCenter(); db.kvSet('map.state', { center: [c.lng, c.lat], zoom: map.getZoom(), bearing: map.getBearing() }); }, 500));
-  ready.then(updInfo);
+  map.on('moveend', debounce(() => { const c = map.getCenter(); db.kvSet('map.state.' + src.id, { center: [c.lng, c.lat], zoom: map.getZoom(), bearing: map.getBearing() }); }, 500));
+  loaded.then(updInfo);
 
   // genvej ind på kortet fra andre sider: #/kort?lon=..&lat=..
   const q = new URLSearchParams(location.hash.split('?')[1] || '');
-  if (q.has('lon') && q.has('lat')) ready.then(() => goTo(+q.get('lon'), +q.get('lat'), +(q.get('z') || 14), q.get('n') || ''));
+  if (q.has('lon') && q.has('lat')) loaded.then(() => goTo(+q.get('lon'), +q.get('lat'), +(q.get('z') || 14), q.get('n') || ''));
 
   // dækningsadvarsel hvis kortets midte er uden for pakken
   return { node: root, cleanup, fullmap: true };
@@ -401,4 +466,94 @@ function downloadCard(root, ctx, onDone, compact = false, forcedManifest = null)
     };
   })();
   return card;
+}
+
+function makeAreaElevation() { return packs.makeElevation((x, y) => areas.tileData('dem', 12, x, y), 12); }
+
+// ---- hent nyt område (#/kort/nyt) ----------------------------------------------------------------------------------------------
+// Onlinekort (OpenFreeMap) med en fast ramme: det, der er inden for rammen, hentes. Grænser: 3.000 fliser / 50 MB (OpenFreeMaps vilkår).
+async function pageNewArea(ctx) {
+  const root = h('div', { class: 'mapwrap newarea' });
+  const state = { cleanup: [] };
+  const cleanup = () => { state.cleanup.forEach((f) => { try { f(); } catch { /* */ } }); window.__skmap = null; };
+  const resumeId = new URLSearchParams(location.hash.split('?')[1] || '').get('resume');
+  const resume = resumeId ? await areas.getArea(resumeId) : null;
+  const back = h('a', { class: 'btn secondary small', href: '#/kort' }, 'Tilbage til kortet');
+  if (!navigator.onLine) {
+    root.classList.add('dlmode');
+    root.append(h('div', { class: 'card', style: 'margin:1rem' }, h('h2', null, 'Hent nyt område'), h('div', { class: 'callout warn' }, h('span', { class: 'ctitle' }, 'Ingen forbindelse'), h('p', null, 'Nye kortområder kan kun hentes online (wifi anbefales).')), h('div', { class: 'btnrow' }, back)));
+    return { node: root, cleanup, fullmap: true };
+  }
+  try { await loadLibs(); } catch (e) { root.append(h('div', { class: 'card' }, h('p', null, 'Kortbiblioteket kunne ikke indlæses: ' + e.message))); return { node: root, cleanup, fullmap: true }; }
+  const mapDiv = h('div', { id: 'map' });
+  const frame = h('div', { class: 'areaframe', 'aria-hidden': 'true' });
+  const stats = h('p', { class: 'small', 'aria-live': 'polite' }, 'Flyt og zoom kortet, så området er inden for rammen.');
+  const name = h('input', { type: 'text', placeholder: 'Navn på området (fx Rold Skov)', 'aria-label': 'Navn på området', value: resume?.name || '' });
+  const go = h('button', { class: 'btn', disabled: true }, ic('down'), resume ? 'Genoptag' : 'Hent område');
+  const bar = h('div', { class: 'progress', hidden: true }, h('i')); const lab = h('p', { class: 'small muted' });
+  const cancel = h('button', { class: 'btn secondary small', hidden: true }, 'Afbryd');
+  const msg = h('div');
+  const panel = h('div', { class: 'areapanel' }, h('h2', null, resume ? 'Genoptag ' + resume.name : 'Hent nyt område'), stats, name, msg, bar, lab, h('div', { class: 'btnrow' }, go, cancel, back),
+    h('p', { class: 'small muted' }, 'Kortdata: OpenFreeMap / © OpenStreetMap-bidragydere (ODbL). Højde: AWS Terrain Tiles. Hentes én gang og gemmes kun på denne enhed.'));
+  root.append(mapDiv, frame, panel);
+
+  let style = areas.OFM_STYLE;
+  const map = new maplibregl.Map({ container: mapDiv, style, center: resume ? [(resume.bbox[0] + resume.bbox[2]) / 2, (resume.bbox[1] + resume.bbox[3]) / 2] : [10.6, 56.3], zoom: resume ? 10 : 9, attributionControl: { compact: true }, dragRotate: false, pitchWithRotate: false, touchPitch: false });
+  window.__skmap = map;
+  state.cleanup.push(() => map.remove());
+  const ro = new ResizeObserver(() => map.resize()); ro.observe(root); state.cleanup.push(() => ro.disconnect());
+  map.on('error', (e) => { if (e?.error?.message && !/aborted/i.test(e.error.message)) console.warn('Kortfejl:', e.error.message); });
+
+  // rammen = det midterste udsnit af kortet over panelet
+  const frameBBox = () => {
+    if (resume) return resume.bbox;
+    const r = frame.getBoundingClientRect(), m = mapDiv.getBoundingClientRect();
+    const a = map.unproject([r.left - m.left, r.bottom - m.top]), b = map.unproject([r.right - m.left, r.top - m.top]);
+    return [+a.lng.toFixed(5), +a.lat.toFixed(5), +b.lng.toFixed(5), +b.lat.toFixed(5)];
+  };
+  let est = null, seq = 0, busy = false;
+  const update = debounce(async () => {
+    if (busy) return;
+    const my = ++seq, bbox = frameBBox();
+    const n = areas.countTiles(bbox, areas.ZOOMS.vec);
+    if (n > areas.LIMITS.tiles) { est = null; go.disabled = true; stats.replaceChildren(h('strong', null, 'Zoom ind – området er for stort. '), `${n.toLocaleString('da-DK')} fliser (højst ${areas.LIMITS.tiles.toLocaleString('da-DK')} pr. område).`); return; }
+    stats.textContent = `${n.toLocaleString('da-DK')} kortfliser · beregner størrelse …`; go.disabled = true;
+    try {
+      const e = await areas.estimate(bbox);
+      if (my !== seq) return;
+      est = { ...e, bbox };
+      const km = (lon0, lon1, lat) => Math.round(Math.abs(lon1 - lon0) * 111.32 * Math.cos(lat * Math.PI / 180));
+      const wkm = km(bbox[0], bbox[2], (bbox[1] + bbox[3]) / 2), hkm = Math.round((bbox[3] - bbox[1]) * 111.32);
+      stats.replaceChildren(`ca. ${wkm} × ${hkm} km · ${e.vecTiles.toLocaleString('da-DK')} kortfliser + ${e.demTiles} højdefliser · ca. ${fmtMB(e.bytes)}`,
+        e.ok ? '' : h('strong', null, ' – for stort (over 50 MB kortdata). Zoom ind.'));
+      go.disabled = !e.ok;
+    } catch (err) { if (my === seq) { stats.textContent = 'Kunne ikke beregne størrelsen: ' + err.message; go.disabled = true; } }
+  }, 400);
+  if (resume) { go.disabled = false; stats.textContent = `${fmtMB(resume.bytes || 0)} hentet indtil videre – tryk Genoptag.`; }
+  else { map.on('moveend', update); map.once('load', update); }
+
+  let ac = null;
+  const areaId = resume?.id || 'a' + Date.now().toString(36); // fast id: "Genoptag" på samme skærm fortsætter samme område
+  state.cleanup.push(() => ac?.abort());
+  go.onclick = async () => {
+    const nm = name.value.trim() || resume?.name;
+    if (!nm) { name.focus(); toast('Giv området et navn'); return; }
+    busy = true; ac = new AbortController(); go.disabled = true; cancel.hidden = false; bar.hidden = false; msg.replaceChildren();
+    cancel.onclick = () => ac.abort();
+    try {
+      const prev = await areas.getArea(areaId);
+      const rec = await areas.downloadArea(prev ? { ...prev, name: nm } : resume ? { ...resume, name: nm } : { id: areaId, name: nm, bbox: est.bbox, estimate: est }, (p) => {
+        bar.firstChild.style.width = (p.done / p.total * 100).toFixed(1) + '%';
+        lab.textContent = p.phase === 'names' ? 'Bygger søgeindeks …' : `${p.done} af ${p.total} fliser · ${fmtMB(p.bytes)}`;
+      }, ac.signal);
+      await db.kvSet('map.source', rec.id);
+      toast(`"${rec.name}" er hentet og virker nu uden net`);
+      location.hash = '#/kort';
+    } catch (e) {
+      msg.replaceChildren(h('div', { class: 'callout ' + (e.code === 'AFBRUDT' ? 'info' : 'danger') }, h('span', { class: 'ctitle' }, e.code === 'AFBRUDT' ? 'Afbrudt' : 'Hentning mislykkedes'), h('p', null, e.message),
+        h('p', { class: 'small' }, 'Det, der allerede er hentet, gemmes. Du kan genoptage fra områdelisten på kortet.')));
+      go.disabled = false; go.lastChild.textContent = 'Genoptag'; cancel.hidden = true; busy = false;
+    }
+  };
+  return { node: root, cleanup, fullmap: true };
 }

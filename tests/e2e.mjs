@@ -460,6 +460,94 @@ await test('R04', 'Afbrudt service worker-opdatering (manglende fil) efterlader 
 await test('R05', 'Ingen JavaScript-fejl i sessionen (online fase)', async () => { assert(pageErrors.length === 0, pageErrors.join(' | ')); return ''; });
 await test('R06', 'Under normal brug kontaktes kun appens egen server (ingen CDN, fonte eller eksterne API\'er)', async () => { assert([...seenHosts].filter(Boolean).every((h) => h === `127.0.0.1:${port}`), 'værter: ' + [...seenHosts]); return [...seenHosts].join(','); });
 
+// ================================================================================ Kortområder (lokale testfliser i stedet for OpenFreeMap/AWS)
+const FIX = join(ROOT, 'tests', 'fixtures');
+const fxv = { 14: [readFileSync(join(FIX, 'ofm/14_8670_5088.pbf')), readFileSync(join(FIX, 'ofm/14_8671_5088.pbf'))], low: readFileSync(join(FIX, 'ofm/12_2167_1272.pbf')) };
+const demPng = readFileSync(join(FIX, 'dem_12_2167_1272.png'));
+const net = { inflight: 0, max: 0, ofmReq: 0, failAfter: Infinity };
+const slow = (ms) => new Promise((r) => setTimeout(r, ms));
+await ctx.route('https://tiles.openfreemap.org/planet', (r) => r.fulfill({ contentType: 'application/json', body: readFileSync(join(FIX, 'ofm_tilejson.json')), headers: { 'access-control-allow-origin': '*' } }));
+await ctx.route('https://tiles.openfreemap.org/styles/**', (r) => r.fulfill({ contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#dde' } }] }) }));
+await ctx.route('https://tiles.openfreemap.org/planet/**', async (r) => {
+  net.ofmReq++;
+  if (net.ofmReq > net.failAfter) return r.abort('connectionreset');
+  net.inflight++; net.max = Math.max(net.max, net.inflight); await slow(15); net.inflight--;
+  const m = r.request().url().match(/\/(\d+)\/(\d+)\/(\d+)\.pbf/); const z = +m[1];
+  r.fulfill({ contentType: 'application/x-protobuf', headers: { 'access-control-allow-origin': '*' }, body: z === 14 ? fxv[14][+m[2] % 2] : fxv.low });
+});
+await ctx.route('https://s3.amazonaws.com/elevation-tiles-prod/**', (r) => r.fulfill({ contentType: 'image/png', headers: { 'access-control-allow-origin': '*' }, body: demPng }));
+const idbAreas = (p) => p.evaluate(async () => (await import('./js/areas.js')).listAreas());
+const idbTileCount = (p) => p.evaluate(() => new Promise((res) => { const q = indexedDB.open('survivalkit'); q.onsuccess = () => { const g = q.result.transaction('tiles').objectStore('tiles').count(); g.onsuccess = () => res(g.result); }; }));
+const newAreaReady = async (p) => { await p.waitForSelector('.newarea #map'); await p.waitForFunction(() => window.__skmap?.loaded(), null, { timeout: 30000 }); };
+const setView = (p, lon, lat, z) => p.evaluate(([a, b, c]) => window.__skmap.jumpTo({ center: [a, b], zoom: c }), [lon, lat, z]);
+
+await test('M01', 'Kortområder: områdevælgeren viser Djursland og "Hent nyt område"', async () => {
+  await go(page, 'kort'); await mapReady(page);
+  await page.click('button.areapick'); const t = await page.locator('.sheet').innerText();
+  assert(t.includes('Djursland') && t.includes('Hent nyt område'), 'vælger: ' + t.slice(0, 100));
+  await page.click('.sheet a:has-text("Hent nyt område")'); await newAreaReady(page);
+  assert((await page.evaluate(() => location.hash)).startsWith('#/kort/nyt'), 'route');
+  return '';
+});
+
+await test('M02', 'Kortområder: for store områder spærres (OpenFreeMaps grænse på 3.000 fliser)', async () => {
+  await setView(page, 10.5, 56.3, 7.5); await page.waitForFunction(() => /for stort/i.test(document.querySelector('.areapanel').innerText), null, { timeout: 10000 });
+  assert(await page.locator('.areapanel button:has-text("Hent område")').isDisabled(), 'knap ikke spærret');
+  return (await page.locator('.areapanel p').first().innerText()).slice(0, 80);
+});
+
+await test('M03', 'Kortområder: download med fremdrift, højst 4 samtidige forespørgsler og søgeindeks', async () => {
+  await setView(page, 10.52, 56.165, 12.3);
+  await page.waitForFunction(() => { const b = [...document.querySelectorAll('.areapanel button')].find((x) => /Hent område/.test(x.textContent)); return b && !b.disabled; }, null, { timeout: 15000 });
+  await page.fill('input[aria-label="Navn på området"]', 'Testområde Mols'); net.max = 0;
+  await page.click('.areapanel button:has-text("Hent område")');
+  await page.waitForFunction(() => location.hash === '#/kort' && window.__skmapSource && window.__skmapSource !== 'djursland', null, { timeout: 60000 });
+  const a = (await idbAreas(page)).find((x) => x.name === 'Testområde Mols');
+  assert(a?.ready && a.tiles > 20, 'område ikke klar: ' + JSON.stringify(a && { ready: a.ready, tiles: a.tiles }));
+  assert(net.max <= 4 && net.max >= 2, 'samtidige forespørgsler: ' + net.max);
+  assert(a.names.some((x) => x[0] === 'Begtrup Vig'), 'søgeindeks mangler navne');
+  return `${a.tiles} fliser, ${a.names.length} navne, max ${net.max} samtidige`;
+});
+
+await test('M04', 'Kortområder: området vises med lag, højdekurver, højde og søgning', async () => {
+  await mapReady(page); await setView(page, 10.52, 56.165, 13); await idle(page); await page.waitForTimeout(800);
+  const water = await rendered(page, ['water']), cont = (await rendered(page, ['contour-major'])) + (await rendered(page, ['contour-minor']));
+  assert(water > 0, 'vand renderer ikke'); assert(cont > 0, 'højdekurver renderer ikke');
+  assert(/højde ≈ \d+ m/.test(await page.locator('.infobar').innerText()), 'højde i infobjælken');
+  await page.locator('input[aria-label="Søg på kortet"]').fill('Begtrup'); await page.waitForTimeout(400);
+  assert((await page.locator('.mapresults button:not([disabled])').count()) >= 1, 'søgning i området');
+  assert((await page.locator('button.areapick').getAttribute('aria-label')).includes('Testområde Mols') && (await page.locator('input[aria-label="Søg på kortet"]').getAttribute('placeholder')).includes('Testområde Mols'), 'vælger viser området');
+  return `vand ${water}, kurver ${cont}`;
+});
+
+await test('M05', 'Kortområder: afbrudt download kan genoptages og fuldføres', async () => {
+  await go(page, 'kort/nyt'); await newAreaReady(page); await setView(page, 10.56, 56.20, 12.3);
+  await page.waitForFunction(() => { const b = [...document.querySelectorAll('.areapanel button')].find((x) => /Hent område/.test(x.textContent)); return b && !b.disabled; }, null, { timeout: 15000 });
+  await page.fill('input[aria-label="Navn på området"]', 'Afbrudt område'); net.failAfter = net.ofmReq + 12;
+  await page.click('.areapanel button:has-text("Hent område")');
+  await page.waitForSelector('.areapanel .callout:has-text("mislykkedes")', { timeout: 30000 });
+  let a = (await idbAreas(page)).find((x) => x.name === 'Afbrudt område'); assert(a && !a.ready, 'skulle være ufuldstændigt');
+  net.failAfter = Infinity;
+  await page.click('.areapanel button:has-text("Genoptag")');
+  await page.waitForFunction(() => location.hash === '#/kort', null, { timeout: 60000 });
+  const all = (await idbAreas(page)).filter((x) => x.name === 'Afbrudt område');
+  assert(all.length === 1 && all[0].ready, 'genoptag lavede et nyt område eller blev ikke færdigt: ' + all.length);
+  return `${all[0].tiles} fliser efter genoptagelse`;
+});
+
+await test('M06', 'Kortområder: sletning fjerner området og frigør dets egne fliser (delte fliser bevares)', async () => {
+  const before = await idbTileCount(page);
+  await go(page, 'indstillinger'); page.once('dialog', (d) => d.accept());
+  await page.click('button[aria-label="Slet Afbrudt område"]'); await page.waitForTimeout(600);
+  const after = await idbTileCount(page), names = (await idbAreas(page)).map((x) => x.name);
+  assert(!names.includes('Afbrudt område') && names.includes('Testområde Mols'), 'områder efter sletning: ' + names);
+  assert(after < before && after > 0, `fliser ${before} → ${after}`);
+  // tilbage til Djursland, så offlinetestene bruger Djursland-kortet
+  await go(page, 'kort'); await mapReady(page); await page.click('button.areapick'); await page.click('.sheet a:has-text("Djursland")'); await mapReady(page);
+  assert(await page.evaluate(() => window.__skmapSource) === 'djursland', 'kunne ikke skifte tilbage til Djursland');
+  return `fliser ${before} → ${after}`;
+});
+
 await ctx.close();
 
 // ================================================================================ FASE 4: FULD OFFLINE (server lukket) + genstart
@@ -526,6 +614,15 @@ await test('O08', 'OFFLINE: ny waypoint kan gemmes, og eksport virker', async ()
   assert((await page.locator('.sheet').innerText()).includes('Offline-P'), 'gemt offline');
   const [dl] = await Promise.all([page.waitForEvent('download'), page.click('button:has-text("Eksportér GPX")')]); assert(readFileSync(await dl.path(), 'utf8').includes('Offline-P'), 'GPX');
   return '';
+});
+await test('O10', 'OFFLINE: et hentet kortområde kan vælges og vises (lag og højdekurver)', async () => {
+  await go(page, 'kort'); await mapReady(page);
+  await page.click('button.areapick'); await page.click('.sheet a:has-text("Testområde Mols")'); await mapReady(page);
+  await setView(page, 10.52, 56.165, 13); await idle(page); await page.waitForTimeout(800);
+  const water = await rendered(page, ['water']), cont = (await rendered(page, ['contour-major'])) + (await rendered(page, ['contour-minor']));
+  assert(water > 0 && cont > 0, `vand ${water}, kurver ${cont}`);
+  await page.click('button.areapick'); await page.click('.sheet a:has-text("Djursland")'); await mapReady(page);
+  return `vand ${water}, kurver ${cont}`;
 });
 await test('O09', 'OFFLINE: ingen fejlede eller eksterne netværkskald under hele offline-sessionen', async () => {
   assert(offErrors.length === 0, 'JS-fejl: ' + offErrors.join(' | '));

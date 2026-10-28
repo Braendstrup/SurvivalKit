@@ -73,7 +73,7 @@ async function render() {
       case 'indstillinger': node = await V.pageSettings(ctx); title = 'Indstillinger'; break;
       case 'kort': {
         const { pageMap } = await import('./mapview.js');
-        const r = await pageMap(ctx);
+        const r = await pageMap(ctx, parts[1]);
         node = r.node; current.cleanup = r.cleanup; if (r.fullmap) main.classList.add('fullmap');
         title = 'Kort'; nav = 'kort';
         break;

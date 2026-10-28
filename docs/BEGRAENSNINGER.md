@@ -15,7 +15,9 @@ Opdateret sammen med den seneste testkørsel. Intet er markeret som testet, hvis
 - Browserlager kan ryddes af styresystemet (se OFFLINE.md).
 - GPS-nøjagtighed varierer; kompas i telefon kan være misvisende.
 - Kortsøgning er en simpel delstrengs-søgning i et indeks på ≈ 14.500 navne.
-- Kortpakken er stor (31 MB); dele af området kan ikke hentes separat.
+- Djursland-pakken er stor (31 MB); dele af området kan ikke hentes separat.
+- Selvvalgte kortområder: højst 3.000 fliser eller 50 MB pr. område (ca. 30–50 km i bredden). De kræver OpenFreeMap og AWS ved download (eksterne, gratis tjenester uden garanti). Højdekurver beregnes ud fra en grovere højdemodel end Djursland-pakken. Navne i ikke-latinske skriftsystemer vises ikke, fordi kun latinske skrifttegn er gemt lokalt. Opdatering kræver, at området slettes og hentes igen.
+- Hent-skærmen bruger OpenFreeMaps online-stil, som giver tre ufarlige konsoladvarsler ("Expected value to be of type number") – ikke appens egen stil.
 - Højdeværdier er modelbaserede (±flere meter).
 - Appen forudsætter en moderne browser (MapLibre WebGL, IndexedDB, Service Worker, OffscreenCanvas).
 

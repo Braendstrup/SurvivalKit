@@ -25,7 +25,7 @@ jobs:
       - name: Byg indhold og service worker
         run: node tools/build.mjs
       - name: Indholdstest
-        run: node tests/unit_geo.mjs && node tests/unit_content.mjs && node tests/unit_ai.mjs
+        run: node tests/unit_geo.mjs && node tests/unit_content.mjs && node tests/unit_ai.mjs && node tests/unit_areas.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
