@@ -3,7 +3,7 @@
    bruges, indtil brugeren accepterer opdateringen. Fejler en fil under installation, afbrydes hele installationen og den
    eksisterende version er uændret (atomisk opdatering). Kortpakkerne ligger i IndexedDB og håndteres af appen selv.
    AI-runtime (vendor/mediapipe) er ikke i forhåndscachen: appen lægger den i en separat cache (sk-ai-*), når en model hentes. */
-const VERSION = '0.9.0-6da0f720c7';
+const VERSION = '0.9.0-fd3bd89abc';
 const CACHE = 'sk-static-' + VERSION;
 const PRECACHE = [
  "./",
