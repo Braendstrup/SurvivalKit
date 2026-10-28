@@ -28,7 +28,7 @@ export const guides = [
   info({
     id: 'nav-kortforstaaelse', kap: 'navigation', titel: 'Kortforståelse: målestok, signaturer og højdekurver', niveau: 'gr',
     resume: 'Målestok = forholdet mellem kort og virkelighed; kurver viser højde; tætte kurver = stejlt.', tags: ['målestok', 'signatur', 'højdekurve', 'terræn', 'kort', 'afstand'],
-    kilder: ['osm', 'terrain'], kontrol: K.ikke('Kortlære er alment kendt; ikke kontrolleret mod en navngiven kilde.'),
+    kilder: ['kfuk-kompas', 'osm', 'terrain'], kontrol: K.delvist('Signaturforklaring, målestok og "tætte kurver = stejlt" følger KFUK-Spejdernes guide til kort og kompas (2024). Målestokstabellen er ren omregning. Terrænformer (dal, ryg, sadel) er almen kortlære ({T}).'),
     blokke: [
       H('Målestok og afstand'),
       TABLE(['Målestok', '1 cm på kortet', '4 cm på kortet', 'Brug'], [['1:10.000', '100 m', '400 m', 'Detaljeret, by og sti'], ['1:25.000', '250 m', '1 km', 'Almindeligt friluftskort'], ['1:50.000', '500 m', '2 km', 'Overblik/rute'], ['1:100.000', '1 km', '4 km', 'Planlægning']]),
@@ -67,7 +67,7 @@ export const guides = [
   praktisk({
     id: 'nav-position', kap: 'navigation', titel: 'Bestem din position ud fra synlige terrængenstande (triangulering)', niveau: 'mi',
     resume: 'Pejl 2–3 kendte objekter, læg baglæns pejlelinjer på kortet; skæringen er din position.', tags: ['position', 'triangulering', 'pejling', 'terrængenstande', 'orientering'],
-    kilder: [], kontrol: K.ikke('Almindelig kortlæsning ({T}); ikke kontrolleret mod en navngiven kilde.'),
+    kilder: ['kfuk-kompas', 'wmm'], kontrol: K.delvist('Krydspejling mod to kendte punkter følger KFUK-Spejdernes guide til kort og kompas (2024). Misvisningen er beregnet (WMM). Vinkelkravet (30–150°) og fejltrekanten er almen kortlære ({T}).'),
     formaal: 'At finde din position uden GPS.', hvornaar: ['Du kan se mindst to identificerbare objekter, som står på kortet (kirketårn, mast, sø, vejkryds, top).'],
     udstyr: ['Kort, pejlekompas, blyant, lineal.', 'Alternativ: stirrer mod en linje (vej, bæk) og en tværgående markering.'],
     fig: ['triangulering'],
@@ -98,10 +98,10 @@ export const guides = [
   praktisk({
     id: 'nav-rute', kap: 'navigation', titel: 'Planlæg en rute med alternative udgange og gangtid', niveau: 'mi',
     resume: 'Planlæg korte etaper med synlige retningslinjer, alternative udgange og margener; gangtid er et skøn.', tags: ['rute', 'planlægning', 'gangtid', 'alternativ', 'naismith', 'etape', 'afbrydelse'],
-    kilder: [], kontrol: K.ikke('Naismiths regel og planlægningsprincipperne er almen friluftspraksis ({T}).'),
+    kilder: ['naismith', 'fjellvett'], kontrol: K.delvist('Gangtid følger Naismiths regel (5 km/t + 1 time pr. 600 m stigning). Planlæg, meld fra og vend i tide er fra Fjellvettreglene (Røde Kors/DNT). Tillægget på 30–50 % og etapelængder er tommelfingerregler ({T}).'),
     formaal: 'At lave en realistisk plan og have en plan B.', hvornaar: ['Før en tur – og når du skal bevæge dig fra et uheldssted.'],
     udstyr: ['Kort (offline), kompas, lys, ur; rutefunktionen i appen.', 'Alternativ: papirkort og snor/lineal.'],
-    trin: ['**Del ruten op i etaper** på 1–3 km med tydelige delmål (vejkryds, sø, bakke).', '**Notér retningslinjer** (vej, vandløb, kyst) og **fangstlinjer** (noget, du ikke kan gå forbi uden at mærke det).', '**Planlæg alternative udgange:** hvor er nærmeste vej/bygning hvert sted? Marker dem.', '**Estimér tid** ({T}): 5 km/t + 1 minut pr. 10 m stigning (Naismith). Læg 30–50 % til ved børn, tung oppakning, mørke, dårligt føre. Det er et skøn, ikke en garanti.', '**Sæt afbrydelsestid:** hvornår vender du om? Vurder dagslys.', '**Fortæl andre** din rute og forventede tilbagekomst.'],
+    trin: ['**Del ruten op i etaper** på 1–3 km med tydelige delmål (vejkryds, sø, bakke).', '**Notér retningslinjer** (vej, vandløb, kyst) og **fangstlinjer** (noget, du ikke kan gå forbi uden at mærke det).', '**Planlæg alternative udgange:** hvor er nærmeste vej/bygning hvert sted? Marker dem.', '**Estimér tid:** 5 km/t + 1 minut pr. 10 m stigning (Naismiths regel). Uden for stier: regn med ca. 4 km/t (Aitken). Læg 30–50 % til ved børn, tung oppakning, mørke og dårligt føre {T}. Det er et skøn for raske voksne, ikke en garanti.', '**Sæt afbrydelsestid:** hvornår vender du om? Vurder dagslys.', '**Fortæl andre** din rute og forventede tilbagekomst – og aftal, hvad de skal gøre, hvis du ikke kommer.'],
     kontrolTjek: ['Alle etaper har retningslinje; alle har en udgang; tiden passer med lyset.'],
     fejl: ['For lange etaper uden delmål.', 'Ingen alternative udgange.', 'For optimistisk tid.'],
     sikkerhed: ['Vurder vejr og lys ([[vejr-dmi]]); vend tidligt.', 'Ruten må ikke gå over privat/forbudt areal ([[regler-faerdsel]]).'],
@@ -112,9 +112,10 @@ export const guides = [
   praktisk({
     id: 'nav-svigt', kap: 'navigation', titel: 'Når GPS, mobil eller kompas svigter', niveau: 'mi',
     resume: 'Fald tilbage på kort, landemærker, retningslinjer og tælletrin.', tags: ['gps', 'mobil', 'kompas', 'svigter', 'fallback', 'retningslinje', 'skridttælling'],
-    kilder: ['osm'], kontrol: K.ikke('Almen friluftspraksis ({T}).'),
+    kilder: ['fjellvett', 'kfuk-kompas', 'osm'], kontrol: K.delvist('"Stol ikke kun på elektronik – hav kort og kompas, og vid altid hvor du er" er fra Fjellvettreglene. Skridt- og tidsomregning er tommelfingerregler, du bør kalibrere selv ({T}).'),
     formaal: 'At finde vej uden teknik.', hvornaar: ['Strømløs telefon, intet GPS-signal, ødelagt kompas.'],
     udstyr: ['Papirkort (best), ur, noget at markere med.', 'Alternativ: hukommelse + landmærker.'],
+    foer: [INFO('**Forebyg:** Stol ikke kun på telefonen. Hav papirkort og kompas med, og tjek din position undervejs – også på afmærkede stier (Fjellvettreglene).')],
     trin: ['**Stop** og afgør: bliv eller gå ([[nod-blive-eller-gaa]]).', 'Brug **retningslinjer** (vej, vandløb, kyst, jernbane, vindmøller) og **fangstlinjer**.', '**Tæl trin:** ca. 65–75 skridt pr. 100 m (dobbeltskridt ~ 60) – kalibrér din egen. {T}', '**Brug tid:** ved 4 km/t gå ca. 15 min pr. kilometer {T}.', '**Orienter efter vejen/vandløb:** vand løber nedad; veje fører til bebyggelse.', '**Markér** vigtige punkter (sten, tøj) og gå kun i sikkert terræn.', 'Prøv at få signal igen på åbent sted.'],
     kontrolTjek: ['Retning bekræftes af mindst to objekter.'],
     fejl: ['At gå i ring uden retningslinje.', 'At gå i mørke.', 'At følge solen som eneste kompas.'],
