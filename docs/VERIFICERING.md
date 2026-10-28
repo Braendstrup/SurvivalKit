@@ -6,7 +6,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 
 | | Kontrolleret | Delvist | Ikke verificeret | I alt |
 |---|---|---|---|---|
-| Guides | 47 | 57 | 17 | 121 |
+| Guides | 52 | 58 | 16 | 126 |
 | Arter | 20 | 8 | 3 | 31 |
 
 ## Indhold der IKKE er fuldt verificeret
@@ -79,7 +79,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Vejrtegn i naturen (grove tommelfingerregler) | Vejr, orientering og ruter | ikke | Almen meteorologisk praksis ({T}). |
 | Valg af rute efter vejret | Vejr, orientering og ruter | ikke | Almen praksis ({T}). |
 | Kysten og vand: særlige risici | Vejr, orientering og ruter | delvist | Stormflod/oversvømmelse fra havet er omtalt af Beredskabsstyrelsen; strandbreddens status (nbl. § 22) er fra SGAV. Øvrigt er almen forsigtighed ({T}). |
-| Tordenvejr og lyn | Vejr, orientering og ruter | ikke | Almen sikkerhedspraksis ({T}). |
+| Tordenvejr og lyn | Vejr, orientering og ruter | delvist | Råd om ly, træer, metal, vand, bil, cykel, hugsiddende stilling og afstandsberegning følger DMI: Forholdsregler ved tordenvejr (opdateret 27.6.2018). DMI angiver ingen ventetid; "30 minutter" og spredning af grupper er almen praksis ({T}). |
 | Overlevelse i forskellige danske naturtyper | Naturtyper og dyreliv | delvist | Regler (bål, overnatning, færdsel, rygeforbud) er kontrolleret. Fysiske vurderinger er almen praksis ({T}). |
 | Djursland: landskab, steder og lokale forhold | Naturtyper og dyreliv | delvist | Stedfakta er hentet fra OpenStreetMap-data i kortpakken (fx Agri Bavnehøj 137 m, Trehøje 127 m, Nationalpark Mols Bjerge, Natura 2000-områder, vildtreservater). Ikke gennemgået mod en officiel kilde. |
 | Dyr og farer: flåter, insekter, hugorm og andre møder | Naturtyper og dyreliv | delvist | Flåt, hugorm og allergi er kontrolleret mod Sundhed.dk. Myg, hvepse (undtagen allergi) og dyr er almen viden. |
@@ -132,6 +132,9 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Astmaanfald | sdk-astma |
 | Shock (kredsløbssvigt) | sdk-shock |
 | Besvimelse | sdk-besvimelse |
+| Bi- og hvepsestik (insektstik) | sdk-insektstik, sdk-allergi |
+| Hundebid og andre dyrebid | sdk-dyrebid, sdk-saar |
+| Solskoldning | sdk-sol, sdk-hedeslag |
 | Bål: hvor og hvornår er det lovligt? | ns-ild, brs-afbraending, ns-baal, ns-teltning |
 | Slukning, eftersyn og håndtering af gløder | ns-baal, brs-afbraending |
 | Kulilte, røg og brandfare | sdk-kulilte, brs-forberedt |
@@ -148,6 +151,8 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Svampe: sikkerhedsstandard | fvst-svampe, fvst-svampefolder, sdk-svampeforg |
 | Mistanke om svampeforgiftning | sdk-svampeforg, fvst-svampe, brs-112 |
 | Hygiejne, krydskontaminering og opbevaring af mad | fvst-hygiejne |
+| Is på søer – og hvis nogen falder igennem | rfv-is, rsb-raad, sdk-hypotermi, sdk-drukning |
+| Revlestrøm (hestehul) ved stranden | rsb-raad, sdk-drukning |
 | Vigtige danske telefonnumre | brs-112 |
 | Varsling: sirener, S!RENEN og beredskabsmeddelelser | brs-forbered-dig, brs-forberedt |
 | Klar til 3 døgn: hjemmeberedskab | brs-forberedt, brs-forbered-dig |
