@@ -319,3 +319,23 @@ main:focus, main:focus-visible { outline: none; }
 .newarea .areapanel h2 { margin: var(--s1) 0 var(--s2); font-size: 1.1rem; }
 .newarea .areapanel input { margin: var(--s2) 0; }
 @media (min-width: 48rem) { .newarea .areapanel { left: 50%; transform: translateX(-50%); max-width: 32rem; } }
+
+/* ---- scenarier --------------------------------------------------------------------------------- */
+.nodrow.scn { border-left-color: var(--warn); } .nodrow.scn .lead { color: var(--warn); }
+.scenarie .phase > summary .count { flex: none; font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.scenarie .phase > summary h2 { flex: 1; }
+.scnstep { border-bottom: 1px solid var(--line); }
+.scnstep:last-child { border-bottom: 0; }
+.scnstep .check { border-bottom: 0; padding: var(--s3) 0; }
+.scnstep .check span { line-height: 1.45; }
+.scnstep.done .check span { text-decoration: none; color: var(--muted); }
+.scnstep.done .check span b, .scnstep.done .check span strong { text-decoration: line-through; }
+.scnstep.alarm { border-left: 4px solid var(--danger); padding-left: var(--s3); margin-left: calc(-1 * var(--s3)); background: color-mix(in srgb, var(--danger-soft) 60%, transparent); border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+.stepextra { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; padding: 0 0 var(--s3) 2.1rem; margin-top: calc(-1 * var(--s2)); }
+.steplink { font-size: .86rem; font-weight: 600; text-decoration: none; }
+.call112.mini { display: inline-flex; margin: 0; padding: .3rem .7rem; gap: .35rem; font-weight: 700; font-size: .86rem; border-radius: 99px; }
+.call112.mini > .ic { padding: .2rem; width: .9rem; height: .9rem; }
+.scnq { background: var(--surface-2); border-radius: var(--r-sm); padding: var(--s3); margin: var(--s3) 0; }
+.scnq p { margin: 0 0 var(--s2); } .scnq .chips { margin: 0; }
+.scnq .chip { text-align: left; }
+.nodrow.scn { min-height: 56px; } .nodrow.scn small { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }

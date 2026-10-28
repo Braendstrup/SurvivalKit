@@ -3,7 +3,7 @@
    bruges, indtil brugeren accepterer opdateringen. Fejler en fil under installation, afbrydes hele installationen og den
    eksisterende version er uændret (atomisk opdatering). Kortpakkerne ligger i IndexedDB og håndteres af appen selv.
    AI-runtime (vendor/mediapipe) er ikke i forhåndscachen: appen lægger den i en separat cache (sk-ai-*), når en model hentes. */
-const VERSION = '0.9.0-d6bee67c32';
+const VERSION = '0.9.0-6da0f720c7';
 const CACHE = 'sk-static-' + VERSION;
 const PRECACHE = [
  "./",
@@ -26,6 +26,7 @@ const PRECACHE = [
  "js/mapview.js",
  "js/mvt.js",
  "js/packs.js",
+ "js/scenarier.js",
  "js/store.js",
  "js/util.js",
  "js/views.js",
@@ -35,6 +36,7 @@ const PRECACHE = [
  "js/views/guide.js",
  "js/views/home.js",
  "js/views/nod.js",
+ "js/views/scenarie.js",
  "js/views/search.js",
  "js/views/settings.js",
  "js/views/ui.js",

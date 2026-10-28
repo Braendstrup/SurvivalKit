@@ -18,7 +18,7 @@ const mods = {};
 for (const f of readdirSync(CONTENT).filter((n) => n.endsWith('.mjs') && !n.startsWith('_')).sort()) {
   mods[f] = await import(pathToFileURL(join(CONTENT, f)).href);
 }
-const chapters = [], guides = [], species = [], lists = [], sources = [];
+const chapters = [], guides = [], species = [], lists = [], sources = [], scenarier = [];
 let nodmenu = [], temaer = [];
 const figs = {};
 for (const [f, m] of Object.entries(mods)) {
@@ -27,6 +27,7 @@ for (const [f, m] of Object.entries(mods)) {
   if (m.species) species.push(...m.species);
   if (m.lists) lists.push(...m.lists);
   if (m.sources) sources.push(...m.sources);
+  if (m.scenarier) scenarier.push(...m.scenarier);
   if (m.nodmenu) nodmenu = m.nodmenu;
   if (m.temaer) temaer = m.temaer;
 }
@@ -79,6 +80,30 @@ for (const s of species) {
   for (const x of s.kilder || []) if (!srcIds.has(x)) err(`art ${s.id}: ukendt kilde ${x}`);
 }
 for (const l of lists) dupe(l.id, 'liste');
+// scenarier: kilder, links, spørgsmål/forgreninger og evidensmærker
+for (const sc of scenarier) dupe(sc.id, 'scenarie');
+for (const sc of scenarier) {
+  const w = `scenarie ${sc.id}`;
+  if (!sc.titel || !sc.faser?.length) err(`${w}: mangler titel/faser`);
+  for (const k of sc.kilder || []) if (!srcIds.has(k)) err(`${w}: ukendt kilde ${k}`);
+  if (!sc.kontrol || !['kontrolleret', 'delvist', 'ikke'].includes(sc.kontrol.status)) err(`${w}: mangler kontrolstatus`);
+  const spm = new Map();
+  for (const f of sc.faser) {
+    if (!f.trin?.length) err(`${w}: fasen "${f.titel}" har ingen trin`);
+    for (const t of f.trin || []) {
+      if (t.hvis) {
+        const q = spm.get(t.hvis.spm);
+        if (!q) err(`${w}: "hvis" peger på ukendt eller senere spørgsmål ${t.hvis.spm}`);
+        else for (const a of t.hvis.svar) if (!q.has(a)) err(`${w}: ukendt svar ${t.hvis.spm}=${a}`);
+      }
+      if (t.spm) { if (spm.has(t.spm)) err(`${w}: dublet-spørgsmål ${t.spm}`); spm.set(t.spm, new Set(t.svar.map((x) => x.id))); if (t.svar.length < 2) err(`${w}: spørgsmål ${t.spm} skal have mindst 2 svar`); continue; }
+      if (!['D', 'T', 'F'].includes(t.ev)) err(`${w}: trin uden evidensmærke: ${String(t.x).slice(0, 40)}`);
+      if (t.ev === 'D' && !(sc.kilder || []).length) err(`${w}: {D}-trin kræver kilder`);
+    }
+  }
+}
+const allIds = () => new Set([...ids, 'kort', 'arter', 'kilder', 'nod']);
+for (const sc of scenarier) for (const f of sc.faser) for (const t of f.trin) if (t.link && !allIds().has(t.link)) err(`scenarie ${sc.id}: ukendt link ${t.link}`);
 // temaer: hvert (ikke-skjult) kapitel i præcis ét tema
 const inTema = new Map();
 for (const t of temaer) {
@@ -92,19 +117,19 @@ for (const n of nodmenu) if (!guides.find((g) => g.id === n.guide)) err(`nødmen
 const known = new Set([...ids, 'kort', 'arter', 'kilder', 'nod']);
 const scan = (txt, where) => { for (const m of String(txt).matchAll(/\[\[([^\]|]+)/g)) if (!known.has(m[1].trim())) err(`${where}: brudt link [[${m[1]}]]`); };
 const walk = (o, where) => { if (typeof o === 'string') scan(o, where); else if (Array.isArray(o)) o.forEach((x) => walk(x, where)); else if (o && typeof o === 'object') Object.values(o).forEach((x) => walk(x, where)); };
-guides.forEach((g) => walk(g, 'guide ' + g.id)); species.forEach((s) => walk(s, 'art ' + s.id)); lists.forEach((l) => walk(l, 'liste ' + l.id)); chapters.forEach((c) => walk(c, 'kap ' + c.id));
+guides.forEach((g) => walk(g, 'guide ' + g.id)); scenarier.forEach((sc) => walk(sc, 'scenarie ' + sc.id)); species.forEach((s) => walk(s, 'art ' + s.id)); lists.forEach((l) => walk(l, 'liste ' + l.id)); chapters.forEach((c) => walk(c, 'kap ' + c.id));
 
 if (problems.length) { console.error('BYGGEFEJL:\n - ' + problems.join('\n - ')); process.exit(1); }
 
 const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
 const stats = {
-  guides: guides.length, praktiske: guides.filter((g) => g.type === 'praktisk').length, arter: species.length, lister: lists.length, kilder: sources.length, figurer: Object.keys(figs).length,
+  scenarier: scenarier.length, guides: guides.length, praktiske: guides.filter((g) => g.type === 'praktisk').length, arter: species.length, lister: lists.length, kilder: sources.length, figurer: Object.keys(figs).length,
   kontrolleret: guides.filter((g) => g.kontrol.status === 'kontrolleret').length, delvist: guides.filter((g) => g.kontrol.status === 'delvist').length, ikke: guides.filter((g) => g.kontrol.status === 'ikke').length,
   artKontrolleret: species.filter((s) => s.kontrol.status === 'kontrolleret').length, artDelvist: species.filter((s) => s.kontrol.status === 'delvist').length, artIkke: species.filter((s) => s.kontrol.status === 'ikke').length,
 };
 mkdirSync(join(APP, 'data'), { recursive: true });
 const build = { version: pkg.version, date: new Date().toISOString().slice(0, 10), stats };
-writeFileSync(join(APP, 'data', 'content.json'), JSON.stringify({ build, chapters, guides, species, lists, sources, figs, nodmenu, temaer }));
+writeFileSync(join(APP, 'data', 'content.json'), JSON.stringify({ build, chapters, guides, species, lists, sources, figs, nodmenu, temaer, scenarier }));
 console.log('indhold:', JSON.stringify(stats));
 
 // ---- service worker --------------------------------------------------------------------------------------------------------------

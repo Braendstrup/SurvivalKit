@@ -4,13 +4,14 @@ En **offline-first PWA** med en dansk survivalhåndbog, et **topografisk offline
 
 - **Håndbog:** 101 guides i 17 kapitler, 31 arter, 7 tjeklister og 38 registrerede kilder. Hver guide har en kontrolstatus med kilder og dato.
 - **Kort:** OpenStreetMap og en højdemodel med højdekurver over Djursland (31 MB, dokumenteret dækning), og mulighed for at hente selvvalgte områder hvor som helst i verden.
+- **Scenarier:** 8 trin-for-trin-forløb for kriser og hændelser (strømmen går, vandet forsvinder, storm og skybrud, sirene, faret vild, varmen svigter, røg eller brand, hedebølge).
 - **AI-assistent:** valgfri Gemma 4 (2–3 GB). Den svarer ud fra håndbogen og viser kildelinks.
 
 > **Vigtigt:** Appen erstatter aldrig 112, et førstehjælpskursus eller en kyndig svampe- eller plantekender. Se [docs/BEGRAENSNINGER.md](docs/BEGRAENSNINGER.md) og [docs/VERIFICERING.md](docs/VERIFICERING.md) for, hvad der er kontrolleret mod kilder, og hvad der ikke er.
 
-| Forside | Guide | Nød | AI-assistent | Hent kortområde | Kortområde offline |
+| Forside | Guide | Scenarie | AI-assistent | Hent kortområde | Kortområde offline |
 |---|---|---|---|---|---|
-| <img src="docs/screenshots/forside-lys.png" width="150" alt="Forside"> | <img src="docs/screenshots/guide-lys.png" width="150" alt="Guide"> | <img src="docs/screenshots/nod-moerk.png" width="150" alt="Nød"> | <img src="docs/screenshots/ai-samtale-moerk.png" width="150" alt="AI-assistent"> | <img src="docs/screenshots/kort-nyt-omraade.png" width="150" alt="Hent nyt kortområde"> | <img src="docs/screenshots/kort-omraade.png" width="150" alt="Hentet kortområde"> |
+| <img src="docs/screenshots/forside-lys.png" width="150" alt="Forside"> | <img src="docs/screenshots/guide-lys.png" width="150" alt="Guide"> | <img src="docs/screenshots/scenarie-lys.png" width="150" alt="Scenarie"> | <img src="docs/screenshots/ai-samtale-moerk.png" width="150" alt="AI-assistent"> | <img src="docs/screenshots/kort-nyt-omraade.png" width="150" alt="Hent nyt kortområde"> | <img src="docs/screenshots/kort-omraade.png" width="150" alt="Hentet kortområde"> |
 
 ## Brug
 
@@ -19,7 +20,7 @@ Appen er bygget mobile first og har fire faner i bundmenuen. Toplinjen har søgn
 | Fane / sted | Indhold |
 |---|---|
 | **Hjem** | Søgefelt ("Søg eller spørg …"), nødkort, de 6 temaer og "Fortsæt" (senest læste guide og bogmærker) |
-| **Nød** | De 8 nødsituationer, "Ring 112 hvis …", nødprocedure på under ét minut og andre numre |
+| **Nød** | "Akut" (8 nødsituationer), "Kriser og hændelser" (8 scenarier), "Ring 112 hvis …", nødprocedure på under ét minut og andre numre |
 | **Kort** | Offlinekort over Djursland og selvvalgte områder: lag, GPS, koordinater (WGS84 og UTM32/ETRS89), højde, måling, rute med gangtid, waypoints (GPX ind/ud) og søgning |
 | **Gemte** | Bogmærker, tjeklister med fremdrift, noter og nødkontakter. Alt gemmes kun lokalt |
 | Søg → **Spørg AI** | Spørgsmål i almindeligt sprog. Svaret bygger på håndbogen og viser kildelinks |
@@ -40,6 +41,30 @@ Appen er bygget mobile first og har fire faner i bundmenuen. Toplinjen har søgn
 **112:** knappen vises på Nød-siden og i nød- og førstehjælpsguides. AI-assistenten viser altid "Ring 112" først ved nødord.
 
 Der er **ingen artsfotos og ingen AI-genererede artstegninger**, fordi de kunne give falsk tryghed. Artsguiden er et støtteværktøj, ikke et bestemmelsesværktøj.
+
+## Scenarier
+
+Under **Nød → Kriser og hændelser** findes otte scenarier:
+- Strømmen går
+- Vandet forsvinder eller der er kogeanbefaling
+- Storm, skybrud og vand i kælderen
+- Sirenen lyder
+- Faret vild på tur
+- Varmen svigter om vinteren
+- Røg eller brand i nærheden
+- Hedebølge
+
+**Sådan er de bygget op:**
+- **Faser:** fx "Med det samme", "Hvis det trækker ud" og "Når det er overstået".
+- **Trin:** hvert trin kan krydses af og har et evidensmærke ({D}, {T} eller {F}) og evt. et link til en guide.
+- **Forgreninger:** afgørende spørgsmål ændrer de næste trin. Fx "Kun hos mig?" fører til HPFI-relæet og grupperne én ad gangen, mens "Hele området?" fører til DR P4 og elselskabet.
+- **Fremdrift** gemmes på telefonen.
+
+Indholdet bygger på kilder, der er hentet og læst 2026-10-28:
+- **Myndigheder:** Beredskabsstyrelsen (sirenefaktaark, skybrud, storm, stormflod), Fødevarestyrelsen (strømafbrydelse), Politiet (brand og røg), Samsik, Miljøstyrelsen og Sundhed.dk.
+- **Bolius:** ikke en myndighed, og det står ved kilden.
+
+Sundhedsstyrelsens sider kunne ikke hentes. Hedebølge-scenariet er derfor kun delvist kontrolleret.
 
 ## Installation på telefonen
 
@@ -85,8 +110,8 @@ Datakilder, licenser, pipeline og opdatering står i [docs/KORTDATA.md](docs/KOR
 ```bash
 npm run build          # bygger indhold (app/data/content.json) og service worker (app/sw.js)
 npm run serve          # statisk server på http://127.0.0.1:8080/ (appen = mappen app/)
-npm run test:unit      # UTM32 mod pyproj, indhold, AI-regler, kortområder (flisematematik, navneudtræk)
-npm run test:e2e       # Playwright/Chromium: 53 tests – funktion, kort, kortområder, robusthed, fuld offline, UX og AI (~4 min)
+npm run test:unit      # UTM32 mod pyproj, indhold, AI-regler, kortområder, scenarier (forgreninger, kilder)
+npm run test:e2e       # Playwright/Chromium: 59 tests – funktion, kort, kortområder, scenarier, robusthed, fuld offline, UX og AI (~4 min)
 node tests/ai_real.mjs # valgfrit: rigtig Gemma 4 E2B (2 GB download, WebGPU; meget langsom uden GPU)
 node tools/report.mjs  # genererer docs/VERIFICERING.md, KILDER.md og TESTRESULTATER.md
 ```
@@ -97,7 +122,7 @@ node tools/report.mjs  # genererer docs/VERIFICERING.md, KILDER.md og TESTRESULT
 
 | Sti | Indhold |
 |---|---|
-| `content/*.mjs` | Indholdet: kapitler, temaer, guides, arter, lister og kilder. Valideres af `tools/build.mjs` |
+| `content/*.mjs` | Indholdet: kapitler, temaer, guides, scenarier (`95_scenarier.mjs`), arter, lister og kilder. Valideres af `tools/build.mjs` |
 | `app/js/views/` | Én fil pr. sidetype (forside, guide, nød, gemte, søg, indstillinger, arter, chat) |
 | `app/js/ai/` | AI: motorer, modeldownload, håndbogsopslag og sikkerhedsregler |
 | `app/js/mapview.js`, `app/map/` | Kortvisning og kortstile (Djursland og OpenMapTiles-områder) |
@@ -130,7 +155,7 @@ Står Pages i stedet på *Deploy from a branch*, ligger appen under `…/Surviva
 | [docs/VERIFICERING.md](docs/VERIFICERING.md) | Hvad er kontrolleret, og liste over uverificeret indhold |
 | [docs/TESTRESULTATER.md](docs/TESTRESULTATER.md) | Faktiske testresultater |
 | [docs/BEGRAENSNINGER.md](docs/BEGRAENSNINGER.md) | Kendte begrænsninger, herunder AI-assistentens |
-| [docs/superpowers/specs/](docs/superpowers/specs/) | Designspecifikationer (UX-overhaul, AI-chat) |
+| [docs/superpowers/specs/](docs/superpowers/specs/) | Designspecifikationer (UX-overhaul, AI-chat, kortområder, scenarier) |
 
 ## Licens
 

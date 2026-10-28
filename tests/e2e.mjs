@@ -107,7 +107,7 @@ await test('F05', 'Søgning virker (guides, arter, danske tegn)', async () => {
 
 await test('F06', 'Nødmenu: 8 genveje peger på eksisterende guides', async () => {
   await go(page, 'nod');
-  const hrefs = await page.locator('a.nodrow').evaluateAll((els) => els.map((e) => e.getAttribute('href')));
+  const hrefs = await page.locator('a.nodrow:not(.scn)').evaluateAll((els) => els.map((e) => e.getAttribute('href')));
   assert(hrefs.length === 8, 'antal genveje: ' + hrefs.length);
   for (const h of hrefs) assert(content.guides.some((g) => '#/g/' + g.id === h), 'ukendt ' + h);
   return hrefs.length + ' genveje';
@@ -173,7 +173,7 @@ await test('U03', 'Guide: Fremgangsmåde og Sikkerhed er åbne, øvrige afsnit f
 });
 
 await test('U04', 'Ingen vandret scroll ved 320–768 px på hovedsiderne', async () => {
-  const pages = ['', 'tema/akut', 'g/vand-kogning', 'g/knob-paelestik', 'nod', 'gemte', 'sog?q=vand', 'spoerg', 'indstillinger', 'arter', 'a/' + content.species[0].id, 'lister/hjemmeberedskab'];
+  const pages = ['', 'tema/akut', 'g/vand-kogning', 'g/knob-paelestik', 'nod', 'scenarie/scn-storm', 'gemte', 'sog?q=vand', 'spoerg', 'indstillinger', 'arter', 'a/' + content.species[0].id, 'lister/hjemmeberedskab'];
   const bad = [];
   for (const w of [320, 360, 390, 768]) {
     await page.setViewportSize({ width: w, height: 800 });
@@ -208,6 +208,53 @@ await test('U07', 'Bundmenu: 4 faner, og den aktive fane følger siden', async (
   }
   await go(page, 'g/vand-kogning'); assert(await page.locator('.top .back').isVisible(), 'tilbage-pil på guide');
   await go(page, ''); assert(!(await page.locator('.top .back').isVisible()), 'ingen tilbage-pil på forsiden');
+  return '';
+});
+
+// ================================================================================ Scenarier
+await test('S01', 'Scenarier: alle åbner med faser, trin, kilder – og står på Nød-siden', async () => {
+  await go(page, 'nod'); assert((await page.locator('a.nodrow.scn').count()) === content.scenarier.length, 'scenarier på Nød-siden');
+  for (const sc of content.scenarier) {
+    await go(page, 'scenarie/' + sc.id);
+    assert((await page.locator('main h1').textContent()) === sc.titel, sc.id + ': titel');
+    assert((await page.locator('details.phase').count()) === sc.faser.length, sc.id + ': faser');
+    assert((await page.locator('.scnstep').count()) >= 3, sc.id + ': trin');
+    assert((await page.locator('summary:has-text("Kilder og evidens")').count()) === 1, sc.id + ': kilder');
+    assert(!(await page.locator('main').innerText()).match(/\[object|undefined|\bnull\b/), sc.id + ': [object]/undefined');
+  }
+  return content.scenarier.length + ' scenarier';
+});
+
+await test('S02', 'Scenarier: et svar ændrer de viste trin (strømmen går: kun hos mig / hele området)', async () => {
+  await go(page, 'scenarie/scn-stroem');
+  const vis = (re) => page.locator('.scnstep', { hasText: re }).count();
+  assert((await vis(/HPFI-relæet til igen/)) === 0 && (await vis(/DR P4/)) === 0, 'betingede trin vises før svar');
+  await page.click('.scnq button:has-text("Kun hos mig")'); await page.waitForTimeout(150);
+  assert((await vis(/HPFI-relæet til igen/)) === 1 && (await vis(/DR P4/)) === 0, 'svar "kun hos mig"');
+  await page.click('.scnq button:has-text("Hele området")'); await page.waitForTimeout(150);
+  assert((await vis(/HPFI-relæet til igen/)) === 0 && (await vis(/DR P4/)) === 1, 'svar "hele området"');
+  return '';
+});
+
+await test('S03', 'Scenarier: afkrydsning og svar gemmes og overlever genindlæsning', async () => {
+  await go(page, 'scenarie/scn-stroem'); await page.locator('.scnstep input').first().check(); await page.waitForTimeout(300);
+  await page.reload(); await page.waitForFunction('window.__appReady');
+  assert(await page.locator('.scnstep input').first().isChecked(), 'afkrydsning tabt');
+  assert(await page.locator('.scnq button:has-text("Hele området")').getAttribute('aria-pressed') === 'true', 'svar tabt');
+  assert(/1 af \d+ trin/.test(await page.locator('.meta').innerText()), 'fremdrift');
+  return '';
+});
+
+await test('S04', 'Scenarier: 112-knappen følger scenariet (storm ja, strøm nej)', async () => {
+  await go(page, 'scenarie/scn-storm'); assert(await page.locator('.top .btn-112').isVisible(), '112 mangler på storm');
+  await go(page, 'scenarie/scn-stroem'); assert(!(await page.locator('.top .btn-112').isVisible()), '112 bør ikke vises på strøm');
+  return '';
+});
+
+await test('S05', 'Scenarier: findes via søgning og i temaet Regler & beredskab', async () => {
+  await go(page, 'sog'); await page.fill('input[type=search]', 'HPFI'); await page.waitForTimeout(250);
+  assert((await page.locator('main h2:has-text("Scenarier") + ul a[href="#/scenarie/scn-stroem"]').count()) === 1, 'søgning efter HPFI');
+  await go(page, 'tema/regler'); assert((await page.locator('a[href="#/scenarie/scn-sirene"]').count()) === 1, 'tema');
   return '';
 });
 
@@ -623,6 +670,12 @@ await test('O10', 'OFFLINE: et hentet kortområde kan vælges og vises (lag og h
   assert(water > 0 && cont > 0, `vand ${water}, kurver ${cont}`);
   await page.click('button.areapick'); await page.click('.sheet a:has-text("Djursland")'); await mapReady(page);
   return `vand ${water}, kurver ${cont}`;
+});
+await test('O11', 'OFFLINE: scenarier åbner, og gemt fremdrift er bevaret efter genstart', async () => {
+  await go(page, 'scenarie/scn-stroem');
+  assert(await page.locator('.scnstep input').first().isChecked(), 'afkrydsning efter genstart');
+  await go(page, 'scenarie/scn-sirene'); assert((await page.locator('.scnstep').count()) >= 3, 'sirene-scenarie offline');
+  return '';
 });
 await test('O09', 'OFFLINE: ingen fejlede eller eksterne netværkskald under hele offline-sessionen', async () => {
   assert(offErrors.length === 0, 'JS-fejl: ' + offErrors.join(' | '));
