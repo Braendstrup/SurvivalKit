@@ -7,12 +7,12 @@ Genereret af `tools/report.mjs`. Tallene stammer fra den seneste faktiske kørse
 ```
 UTM32-test: 8 punkter, største afvigelse 0.00000 m, haversine Grenaa-Ebeltoft ca. 25.4 km
 OK
-Indholdstest: 137 guides, 31 arter, 93 kilder – OK
+Indholdstest: 137 guides, 31 arter, 95 kilder – OK
 ```
 
 ## End-to-end (browser)
 
-Kørt 2026-10-28T14:17:46.231Z; 59/59 bestået; varighed 272 s.
+Kørt 2026-10-28T14:23:53.797Z; 59/59 bestået; varighed 273 s.
 
 | ID | Test | Resultat | Detalje |
 |---|---|---|---|
@@ -41,7 +41,7 @@ Kørt 2026-10-28T14:17:46.231Z; 59/59 bestået; varighed 272 s.
 | A03 | AI: på følsomt emne afvises svar med egen viden (vises aldrig) | OK |  |
 | A04 | AI: Stop afbryder svaret og markerer det som ufuldstændigt | OK |  |
 | A05 | AI: uden WebGPU vises en ærlig forklaring, og Indstillinger viser AI-status | OK |  |
-| A06 | AI: appen henter intet modelrelateret, før brugeren vælger det | OK | kun 127.0.0.1:38129 |
+| A06 | AI: appen henter intet modelrelateret, før brugeren vælger det | OK | kun 127.0.0.1:40471 |
 | F09 | Kortpakke hentes med fremdrift, SHA-256-kontrol og aktiveres | OK | version 2026.10.26 |
 | K01 | Kortet viser data på flere zoomniveauer (veje, skov, vand, kurver, bygninger, punkter) | OK | 13 lag/zoom-kombinationer med data |
 | K02 | Koordinater, målestok, nordpil og højde vises korrekt | OK | Midte: Ø 604054 N 6229471 · 56.1988, 10.6771 / højde ≈ 9 m / zoom 14.0 |
@@ -55,9 +55,9 @@ Kørt 2026-10-28T14:17:46.231Z; 59/59 bestået; varighed 272 s.
 | R01 | Begrænset lager: hentning afvises tydeligt og ændrer intet | OK | afvist ved 20 MB kvote |
 | R02 | Afbrudt opdatering (forbindelse mistes midt i hentning): gammel pakke forbliver aktiv og kortet virker | OK | aktiv version uændret: 2026.10.26 |
 | R03 | Korrupt pakkefil afvises via SHA-256 og efterlader den gamle pakke urørt | OK | korruption opdaget |
-| R04 | Afbrudt service worker-opdatering (manglende fil) efterlader den eksisterende version i brug | OK | cache uændret: sk-static-0.9.0-bcfe485e12 |
+| R04 | Afbrudt service worker-opdatering (manglende fil) efterlader den eksisterende version i brug | OK | cache uændret: sk-static-0.9.0-42cbeac7a7 |
 | R05 | Ingen JavaScript-fejl i sessionen (online fase) | OK |  |
-| R06 | Under normal brug kontaktes kun appens egen server (ingen CDN, fonte eller eksterne API'er) | OK | 127.0.0.1:38129, |
+| R06 | Under normal brug kontaktes kun appens egen server (ingen CDN, fonte eller eksterne API'er) | OK | 127.0.0.1:40471, |
 | M01 | Kortområder: områdevælgeren viser Djursland og "Hent nyt område" | OK |  |
 | M02 | Kortområder: for store områder spærres (OpenFreeMaps grænse på 3.000 fliser) | OK | Zoom ind – området er for stort. 5.402 fliser (højst 3.000 pr. område). |
 | M03 | Kortområder: download med fremdrift, højst 4 samtidige forespørgsler og søgeindeks | OK | 34 fliser, 24 navne, max 4 samtidige |
@@ -74,7 +74,7 @@ Kørt 2026-10-28T14:17:46.231Z; 59/59 bestået; varighed 272 s.
 | O08 | OFFLINE: ny waypoint kan gemmes, og eksport virker | OK |  |
 | O10 | OFFLINE: et hentet kortområde kan vælges og vises (lag og højdekurver) | OK | vand 57, kurver 16 |
 | O11 | OFFLINE: scenarier åbner, og gemt fremdrift er bevaret efter genstart | OK |  |
-| O09 | OFFLINE: ingen fejlede eller eksterne netværkskald under hele offline-sessionen | OK | 127.0.0.1:38129,, 0 fejlede |
+| O09 | OFFLINE: ingen fejlede eller eksterne netværkskald under hele offline-sessionen | OK | 127.0.0.1:40471,, 0 fejlede |
 
 **Offline-test:** fase 4 (O01–O09) lukker den lokale webserver helt og genstarter browseren med samme profil. Appen skal da starte fra service worker-cachen og IndexedDB. Netværksværter og fejlede kald logges (O09).
 

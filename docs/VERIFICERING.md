@@ -6,7 +6,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 
 | | Kontrolleret | Delvist | Ikke verificeret | I alt |
 |---|---|---|---|---|
-| Guides | 60 | 71 | 6 | 137 |
+| Guides | 61 | 72 | 4 | 137 |
 | Arter | 20 | 8 | 3 | 31 |
 
 ## Indhold der IKKE er fuldt verificeret
@@ -54,8 +54,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Ottetalsknob | Knob, reb og improviserede hjælpemidler | delvist | Anvendelse er fra De Danske Spejdere. Tegningen af det færdige knob er en matematisk figur-otte-knude (4 kryds) – verificeret geometrisk, men ikke mod en knobkilde. |
 | Tømmerstik | Knob, reb og improviserede hjælpemidler | delvist | Anvendelse og begrænsninger er fra De Danske Spejdere. Tegning mangler; trin er en standardbeskrivelse. |
 | Dobbelt halvstik omkring en fast genstand (om egen part) | Knob, reb og improviserede hjælpemidler | delvist | Anvendelse er fra De Danske Spejdere (dobbelt halvstik om egen part). Tegning mangler; trin er standard. |
-| Kædestik (kort reb til opbevaring) | Knob, reb og improviserede hjælpemidler | ikke | Almen praksis ({T}); ikke kontrolleret mod en navngiven kilde. |
-| Bardunbinding til tarp eller læsejl | Knob, reb og improviserede hjælpemidler | ikke | Almen praksis ({T}); De Danske Spejdere omtaler den ikke. Tegning mangler. |
+| Bardunbinding til tarp eller læsejl | Knob, reb og improviserede hjælpemidler | delvist | Knobet (Midshipman's Hitch) og glid-advarslerne følger Animated Knots. Tegning mangler; brugen til tarp er almen praksis. |
 | Samling af to reb – diameter og belastning | Knob, reb og improviserede hjælpemidler | delvist | Valget følger De Danske Spejdere (råbåndsknob kun lige tykke; flagknob bedre ved forskellig tykkelse; flagknobets styrke omdiskuteret). Øvrige råd om belastning er almen forsigtighed. |
 | Krydsbesnøring (diagonalsurring) | Knob, reb og improviserede hjælpemidler | delvist | Fremgangsmåde fra dansk lokalt spejdermateriale (9530 spejder); ikke kontrolleret mod en anden kilde. |
 | Ottetalsbesnøring – trefod af tre rafter | Knob, reb og improviserede hjælpemidler | delvist | Fremgangsmåde fra dansk lokalt spejdermateriale (9530 spejder); ikke kontrolleret mod en anden kilde. |
@@ -151,6 +150,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Kogning af vand | mst-kog, who-kog |
 | Hygiejnisk opbevaring og undgå krydskontaminering | brs-forberedt |
 | Nødforsyning af drikkevand – danske anbefalinger | brs-forberedt, mst-kog |
+| Kædestik (kort reb til opbevaring) | ak-chain |
 | Ottetalsløkke (dobbelt ottetalsknob) | ak-fig8 |
 | Alpesommerfugl (sommerfugleknob) | ak-butterfly, friluft-knob |
 | Dobbelt fiskerknob | ak-fisherman |

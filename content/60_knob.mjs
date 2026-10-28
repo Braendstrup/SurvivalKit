@@ -119,21 +119,21 @@ export const guides = [
   }),
 
   knot({
-    id: 'knob-kaedestik', titel: 'Kædestik (kort reb til opbevaring)', resume: 'Daisy chain: en række løkker, der forkorter et reb og kan hives op med enden.', tags: ['kædestik', 'daisy chain', 'opbevaring', 'forkorte', 'reb'], fig: ['knob-kaedestik-trin', 'knob-kaedestik'], kontrol: K.ikke('Almen praksis ({T}); ikke kontrolleret mod en navngiven kilde.'),
+    id: 'knob-kaedestik', titel: 'Kædestik (kort reb til opbevaring)', resume: 'Daisy chain: en række løkker, der forkorter et reb og kan hives op med enden.', tags: ['kædestik', 'daisy chain', 'chain sinnet', 'opbevaring', 'forkorte', 'reb'], fig: ['knob-kaedestik-trin', 'knob-kaedestik'], kilder: ['ak-chain'], kontrol: K28.ok('Fremgangsmåde, låsning og opløsning følger Animated Knots: Chain Sinnet.'),
     brug: 'Midlertidig opbevaring af et længere reb eller snor (bag på rygsæk, i skuret) uden at det filtrer. Kan hurtigt rulles ud ved at hive i enden.',
-    trin: ['Lav en **løkke** i rebets ende.', 'Træk en **bugt** af rebet **gennem løkken**, og stram let.', 'Gentag: træk en ny bugt gennem den forrige.', 'Til sidst: stik **enden gennem sidste løkke** og stram for at låse.'],
-    kontrolTjek: ['Kæden ligger jævnt, hver løkke låser den forrige.', 'Hiv i enden: kæden løsner sig kontrolleret.'],
+    trin: ['Lav en **løkke** i rebets ende.', 'Træk en **bugt** af rebet **gennem løkken**, og stram let.', 'Gentag: træk en ny bugt gennem den forrige.', 'Til sidst: stik **enden gennem sidste løkke** og stram for at låse.', 'Tip: skift retning på hver løkke (med og mod uret) – så snor rebet sig mindre, når du løser det op.'],
+    kontrolTjek: ['Kæden ligger jævnt, hver løkke låser den forrige.', 'Træk den låsende ende ud: hele kæden løser sig. (Trækker du i den anden ende, forsvinder kun ét led.)'],
     begr: ['Ikke til at bære eller sikre last.', 'Kan løsne, hvis enden ikke er låst.'],
-    loes: 'Træk i enden og lad løkkerne falde ud én ad gangen.',
+    loes: 'Træk den ende, du låste med, ud af sidste løkke, og hiv – så forsvinder alle løkkerne.',
     fejl: ['Løkkerne trækkes ikke gennem den forrige.', 'Enden ikke låst.'],
   }),
 
   knot({
-    id: 'knob-bardun', titel: 'Bardunbinding til tarp eller læsejl', resume: 'Glidende knob til udspænding; justér stramning uden at binde om.', tags: ['bardun', 'tarp', 'telt', 'tautline', 'udspænding', 'stram'], kontrol: K.ikke('Almen praksis ({T}); De Danske Spejdere omtaler den ikke. Tegning mangler.'),
+    id: 'knob-bardun', titel: 'Bardunbinding til tarp eller læsejl', resume: 'Glidende knob til udspænding; justér stramning uden at binde om.', tags: ['bardun', 'tarp', 'telt', 'tautline', 'midshipman', 'udspænding', 'stram', 'barduneknob'], kilder: ['ak-midshipman'], kontrol: K28.delvist('Knobet (Midshipman\'s Hitch) og glid-advarslerne følger Animated Knots. Tegning mangler; brugen til tarp er almen praksis.'),
     brug: 'Udspænding af tarp, telt eller læsejl fra hjørne til pløk. Knobet kan flyttes for at stramme eller løsne.',
-    trin: ['Sæt rebet fast i tarpens hjørne (øje) og før det ud til pløkken.', 'Lav en **løkke om pløkken** (eller et stik) og før enden tilbage langs egen faste part.', 'Vikl enden **to gange om den faste part indenfor løkken** (mod pløkken).', 'Vikl enden **én gang om den faste part udenfor løkken** (mod tarpen) og stram. Lad knobet kunne glide.', 'Skub knobet for at stramme; slip for at løsne.'],
+    trin: ['Sæt rebet fast i tarpens hjørne (øje) og før det ud til pløkken.', 'Lav en **løkke om pløkken** (eller et stik) og før enden tilbage langs egen faste part.', 'Vikl enden **én gang om den faste part** inde i løkken (mod pløkken).', 'Vikl **endnu en gang**, men stik enden ind **ved siden af den første omgang** – mellem den og løkken – så den krydser og klemmer. Nu holder knobet allerede, mens du justerer.', 'Afslut med **et halvstik om den faste part udenfor** omgangene (mod tarpen), og stram.', 'Skub knobet op ad den faste part for at stramme; når det er strammet, holder det.'],
     kontrolTjek: ['Knobet holder, når du trækker i tarpen, og glider, når du skubber det.', 'Rebet er stramt og tarpen ryster ikke.'],
-    begr: ['Glatte syntetiske reb kan glide.', 'Ikke til belastning af personer.', 'Under kraftig storm kan knob og pløkke give efter.'],
+    begr: ['Glat nylon kan glide med tiden – tag en ekstra omgang og/eller et ekstra halvstik. Dyneema- og polypropylenreb glider næsten altid.', 'Den udbredte spejdervariant (to omgange spiralformet indenfor) er mindre sikker.', 'Ikke til belastning af personer.', 'Under kraftig storm kan knob og pløkke give efter.'],
     loes: 'Skub knobet mod pløkken for at løsne, eller åbn omgangene.',
     fejl: ['For mange/få omgange (knobet glider eller låser fast).', 'Pløk for kort/blød jord.'],
   }),
