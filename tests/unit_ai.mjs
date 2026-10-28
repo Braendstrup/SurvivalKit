@@ -24,7 +24,7 @@ ok(top('hvordan binder jeg et pælestik').includes('knob-paelestik'), 'pælestik
 ok(top('hvad gør jeg ved hugormebid').some((id) => /hugorm/.test(id)), 'hugorm ikke fundet: ' + top('hvad gør jeg ved hugormebid'));
 ok(top('min ven bløder fra armen')[0] === 'fh-bloedning', 'bløder → blødning: ' + top('min ven bløder fra armen'));
 ok(!top('min ven bløder fra armen').includes('beredskab-stroemafbrydelse'), 'armen matcher varmen');
-for (const [q, id] of [['min ven er faldet gennem isen', 'is-soeer'], ['jeg bliver trukket ud af strømmen ved stranden', 'kyst-revlestroem'], ['jeg er blevet bidt af en hund', 'fh-dyrebid'], ['hvad gør jeg ved solskoldning', 'fh-solskoldning'], ['hvor skal jeg gå hen når det lyner', 'vejr-lyn']]) ok(top(q).includes(id), id + ' ikke fundet: ' + top(q));
+for (const [q, id] of [['min ven er faldet gennem isen', 'is-soeer'], ['jeg bliver trukket ud af strømmen ved stranden', 'kyst-revlestroem'], ['jeg er blevet bidt af en hund', 'fh-dyrebid'], ['hvad gør jeg ved solskoldning', 'fh-solskoldning'], ['hvor skal jeg gå hen når det lyner', 'vejr-lyn'], ['der går en ulv efter min hund', 'natur-ulv'], ['kan man drikke regnvand', 'vand-regn-sne']]) ok(top(q).includes(id), id + ' ikke fundet: ' + top(q));
 ok(retrieve('xqzvbn blorf').length === 0, 'nonsens gav resultater');
 ok(retrieve('hvor finder jeg ramsløg').some((s) => s.type === 'a'), 'art ikke fundet for ramsløg');
 

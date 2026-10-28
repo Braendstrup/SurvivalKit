@@ -114,7 +114,7 @@ export const guides = [
   praktisk({
     id: 'ly-overrasket', kap: 'ly', titel: 'Overrasket af mørke eller dårligt vejr uden udstyr', niveau: 'mi',
     resume: 'Stop i tide, find læ og isolér, bliv samlet og gør dig synlig. Gå ikke videre i mørket.', tags: ['mørke', 'uventet', 'vejr', 'uden udstyr', 'overrasket', 'regn', 'storm'],
-    kilder: ['sdk-hypotermi', 'brs-112'], kontrol: K.ikke('Almen friluftspraksis ({T}); nedkølings- og 112-oplysninger er kontrolleret.'),
+    kilder: ['sdk-hypotermi', 'brs-112', 'fjellvett', 'hugatree'], kontrol: K.delvist('"Spar kræfterne og søg ly i tide" er fra Fjellvettreglene; "bliv, hold dig varm og tør, byg en rede over jorden og gør dig hørbar" fra Hug-a-Tree (AdventureSmart). Nedkøling og 112 følger Sundhed.dk/Beredskabsstyrelsen. Improviseret vindspærre er almen praksis ({T}).'),
     formaal: 'At klare natten uden telt, sovepose eller opvarmning – og undgå nedkøling.', hvornaar: ['Vejledningen er til uforberedte situationer, ikke planlagte nætter ude.'],
     udstyr: ['Det du har: tøj, rygsæk, affaldssæk, aviser, planter/blade, telefon, lys.', 'Alternativ: bil, bygning, bus, telt/hytte, bro.'],
     foer: [C112('Ring 112 i god tid, hvis du er kold, våd, skadet eller bange for mørket.')],
