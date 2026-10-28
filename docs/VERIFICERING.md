@@ -6,7 +6,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 
 | | Kontrolleret | Delvist | Ikke verificeret | I alt |
 |---|---|---|---|---|
-| Guides | 53 | 68 | 6 | 127 |
+| Guides | 53 | 70 | 6 | 129 |
 | Arter | 20 | 8 | 3 | 31 |
 
 ## Indhold der IKKE er fuldt verificeret
@@ -88,6 +88,8 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Improviserede løsninger – hvad der er klogt og ikke | Udstyr, værktøj og improvisation | delvist | Princippet om aldrig at bruge åben ild/grill i lukkede rum er fra Sundhed.dk/Beredskabsstyrelsen. De viste løsninger er almen praksis ({T}). |
 | Regler: færdsel i skov, strand, udyrket land og beskyttede områder | Dansk beredskab, alarmering og regler | delvist | Hovedpunkter er hentet fra SGAV's oversigt over naturbeskyttelseslovens §§ 22–26 og adgangsbekendtgørelsen. Folderen kan være ældre end gældende lov; tjek retsinformation.dk. |
 | Beskyttede naturområder (nationalpark, Natura 2000, vildtreservater) | Dansk beredskab, alarmering og regler | ikke | Kortets viste områder stammer fra OpenStreetMap og er ikke juridisk afgrænsede; konkrete regler pr. område er IKKE gennemgået. |
+| Udslip af kemikalier eller radioaktivitet: gå ind og luk af | Dansk beredskab, alarmering og regler | delvist | Kemiudslip og nukleare hændelser følger Beredskabsstyrelsen (begge opdateret 17.1.2024). Jodtabletter følger Sundhedsstyrelsens anbefaling fra 15.6.2024, men kun via en sekundær gengivelse (Videnskab.dk). |
+| Snestorm – og hvis du sidder fast i bilen | Dansk beredskab, alarmering og regler | delvist | Forberedelse og færdsel følger Beredskabsstyrelsen: Snestorme (opdateret 12.6.2024). Rådene om at blive i bilen og holde udstødningen fri bygger på kulilterisikoen (Sundhed.dk), men står ikke i en dansk myndighedskilde ({T}). |
 | Sådan bruger du Djursland-kortet | Topografisk kort over Djursland | delvist | Funktionerne er appens egne og er testet (se testoversigt). Datakilder og begrænsninger: se [[kort-data]]. |
 
 ### Arter

@@ -137,6 +137,7 @@ export const scenarier = [
         D('**Luk døre og vinduer, og sluk ventilationen** (emhætte, ventilationsanlæg). Bliv inde, til faren er forbi.', hvis('besked', 'roeg')),
         D('**Får du symptomer** (irritation i næse og hals, hoste, åndenød, hovedpine, svimmelhed): gå væk fra røgen og kontakt lægevagten. Ved bevidstløshed, kramper eller åndedrætsstop: **ring 112**.', { ...hvis('besked', 'roeg'), alarm: true }),
         D('**Følg anvisningerne præcist** – fx at blive inde, at evakuere eller at undgå bestemte områder.', hvis('besked', 'andet')),
+        D('**Kemisk udslip eller nuklear hændelse:** bliv inde med lukkede døre og vinduer – og tag kun jodtabletter, hvis Sundhedsstyrelsen siger det.', { ...hvis('besked', 'andet'), link: 'beredskab-udslip' }),
         D('**Bliv inde og prøv igen:** FM-radio (DR), tekst-tv side 150, politiets og myndighedernes sociale medier og hjemmesider.', hvis('besked', 'ukendt')),
         D('**Vær kildekritisk:** del kun bekræftede oplysninger fra myndighederne.'),
       ] },
