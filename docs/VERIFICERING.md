@@ -6,7 +6,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 
 | | Kontrolleret | Delvist | Ikke verificeret | I alt |
 |---|---|---|---|---|
-| Guides | 53 | 70 | 6 | 129 |
+| Guides | 60 | 71 | 6 | 137 |
 | Arter | 20 | 8 | 3 | 31 |
 
 ## Indhold der IKKE er fuldt verificeret
@@ -27,6 +27,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Forbrændinger | Førstehjælp og sundhed | delvist | Kølevand ca. 12–18 °C i 20–30 min og "ikke generel nedkøling" er hentet fra Lægehåndbogen (håndforbrændinger); 112 ved ansigt/luftvej fra Patienthåndbogen. Almen borgerside om forbrændinger er ikke læst i denne udgave. |
 | Flåtbid | Førstehjælp og sundhed | delvist | Risici og symptomer er kontrolleret mod Sundhed.dk (opdateret 6.5.2025). Fjernelsesteknikken (flåttang/pincet, jævnt tryk, ingen smør/olie) er fra sundhed.dk-resumé og almen praksis. |
 | Drukning og nærdrukning | Førstehjælp og sundhed | delvist | Førstehjælpen følger Sundhed.dk: Drukning og nær-drukning (opdateret 29.4.2024). Råd om egen sikkerhed ved redning er tommelfingerregler. |
+| Noget i øjet (fremmedlegeme, rift i hornhinden) | Førstehjælp og sundhed | delvist | Symptomer, smertestillende, øjenklap og hvornår du skal til læge følger Sundhed.dk: Afskrabning af hornhinden (opdateret 19.8.2024). Skylning og "gnid ikke" er almindelige lægmandsråd ({T}). |
 | Jeg fryser eller er våd | Ly og beskyttelse mod vejret | delvist | Nedkølingsråd er kontrolleret mod Sundhed.dk. De praktiske tiltag (isolering, lag, bevægelse) er almen friluftsviden ({T}). |
 | Find ly hurtigt og sikkert | Ly og beskyttelse mod vejret | delvist | Regler for overnatning (hængekøje, tarp, fri teltning) er kontrolleret mod Naturstyrelsen. Selve valg og opbygning er almen friluftspraksis ({T}). |
 | Tarp, presenning og simple læløsninger | Ly og beskyttelse mod vejret | delvist | Opbygning er almindelig friluftspraksis ({T}); overnatningsreglerne for tarp er kontrolleret (Naturstyrelsen). |
@@ -137,6 +138,13 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Bi- og hvepsestik (insektstik) | sdk-insektstik, sdk-allergi |
 | Hundebid og andre dyrebid | sdk-dyrebid, sdk-saar |
 | Solskoldning | sdk-sol, sdk-hedeslag |
+| Elulykke (elektrisk stød) | sdk-el, drg |
+| Kemikalier i øjet (ætsning) | sdk-aetsning-oeje |
+| Led ude af led (dislokation) | sdk-led, sdk-brud |
+| Hjernerystelse | sdk-hjernerystelse, sdk-hovedskade |
+| Mistanke om ryg- eller nakkeskade | sdk-rygmarv, drg |
+| Afskåret finger eller legemsdel (amputation) | sdk-amputation, sdk-bloedning, sdk-shock |
+| Muskelkrampe (fx i læggen) | sdk-muskelkrampe, sdk-dehydrering |
 | Bål: hvor og hvornår er det lovligt? | ns-ild, brs-afbraending, ns-baal, ns-teltning |
 | Slukning, eftersyn og håndtering af gløder | ns-baal, brs-afbraending |
 | Kulilte, røg og brandfare | sdk-kulilte, brs-forberedt |
