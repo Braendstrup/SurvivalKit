@@ -17,6 +17,7 @@ export function setContent(c) {
   for (const g of c.guides) store.byId.set(g.id, { type: 'g', item: g });
   for (const s of c.species) store.byId.set(s.id, { type: 'a', item: s });
   for (const l of c.lists) store.byId.set(l.id, { type: 'l', item: l });
+  for (const sc of c.scenarier || []) store.byId.set(sc.id, { type: 's', item: sc });
   for (const s of c.sources) store.byId.set('src:' + s.id, { type: 'src', item: s });
   setLinkResolver((id) => {
     if (id === 'kort') return { href: '#/kort', label: 'Kort over Djursland' };
@@ -61,6 +62,7 @@ function buildIndex() {
   for (const s of c.species) {
     add('a', s.id, s.dansk, `${s.latin} – ${s.kategoriLabel || s.kategori}`, [[s.dansk + ' ' + (s.synonymer || []).join(' '), 10], [s.latin + ' ' + s.familie, 8], [(s.voksested || '') + ' ' + (s.kendetegn || ''), 2], [(s.forvekslinger || []).map((f) => f.navn + ' ' + (f.latin || '')).join(' '), 5]]);
   }
+  for (const sc of c.scenarier || []) add('s', sc.id, sc.titel, 'Scenarie', [[sc.titel, 10], [(sc.tags || []).join(' '), 7], [sc.resume || '', 4], [sc.faser.flatMap((f) => [f.titel, ...f.trin.map((t) => t.x || t.tekst || '')]).join(' '), 1]]);
   for (const l of c.lists) add('l', l.id, l.titel, 'Tjekliste', [[l.titel, 10], [l.grupper.map((gr) => gr.titel + ' ' + gr.punkter.join(' ')).join(' '), 1]]);
   for (const ch of c.chapters) add('kap', ch.id, ch.titel, 'Kapitel', [[ch.titel, 9], [ch.intro || '', 2]]);
   store.index = idx;
@@ -88,5 +90,5 @@ export function search(q, limit = 40) {
   return res.slice(0, limit).map(({ tok, ...r }) => r);
 }
 
-export const routeOf = (type, id) => `#/${type === 'l' ? 'lister' : type}/${id}`;
+export const routeOf = (type, id) => `#/${type === 'l' ? 'lister' : type === 's' ? 'scenarie' : type}/${id}`;
 export const hrefFor = routeOf;

@@ -29,3 +29,21 @@ Pakkens aktuelle størrelse: vektor 19,2 MB, højde 12,0 MB, søgeindeks 0,6 MB 
 
 ## Download og opdatering i appen
 Kort → "Hent kortpakke": fremdrift pr. fil, kontrol af størrelse og SHA-256, atomisk aktivering. Er der en nyere version online, tilbyder **Kortdata og dækning** at hente den; den gamle bevares, til den nye er godkendt. Pakken kan også lægges på en anden statisk server ved at kopiere mappen `app/map/pack/`.
+
+## Selvvalgte kortområder (hele verden)
+
+Brugeren kan hente et område hvor som helst, ud over Djursland-pakken (kode: `app/js/areas.js`, stil: `app/map/style-omt.js`, design: `docs/superpowers/specs/2026-10-28-kortomraader-design.md`).
+
+| Data | Kilde | Zoom | Licens |
+|---|---|---|---|
+| Vektorfliser (OpenMapTiles-skema) | [OpenFreeMap](https://openfreemap.org/), `tiles.openfreemap.org/planet` (version efter TileJSON, gemmes med området) | 6–14 | © OpenStreetMap-bidragydere, ODbL; OpenMapTiles |
+| Højde (Terrarium PNG) | AWS Terrain Tiles, `s3.amazonaws.com/elevation-tiles-prod/terrarium` | 7–12 | SRTM, EU-DEM m.fl. (åbne data) |
+
+- **Vilkår (OpenFreeMap, læst 2026-10-28):** offline-download er tilladt med højst 3.000 fliser eller 50 MB pr. download, højst 4 samtidige forespørgsler og en "unik User-Agent". De to første håndhæves i koden; det sidste er verificeret i e2e-testen M03.
+  - **User-Agent:** en browser kan ikke sætte User-Agent, men sender altid `Origin`/`Referer` med appens adresse. Kontakt OpenFreeMap, før appen bruges af mange.
+- **Lagring:** IndexedDB-lageret `tiles` (nøgle `ofm/z/x/y` eller `dem/z/x/y`) med en liste over de områder, der bruger flisen. Overlappende områder deler fliser, og en flise slettes først, når intet område bruger den. Et område er "klar" først, når alle fliser og navneindekset er gemt. Afbrudte downloads genoptages uden at hente fliser igen.
+- **Visning:**
+  - fliser læses via protokollerne `ofm://` og `idbdem://` og aldrig fra nettet;
+  - højdekurverne (10/50 m ved zoom 13, 5/25 m ved zoom 14+) beregnes på enheden med `maplibre-contour` og er kun vejledende (højdemodel ca. 30–40 m pr. pixel ved z12);
+  - søgeindekset bygges ved download ud fra navnene i z14-fliserne (byer, steder, veje, vand, toppe, POI'er).
+- **Afprøvet mod de rigtige tjenester 2026-10-28:** et område over Mols Bjerge (ca. 6 × 6 km, 63 fliser, 2,9 MB, 159 navne) hentede på 4 s og viste skov, vand, højdekurver og højde. Søgning efter "Agri" fandt Agri Bavnehøj m.fl.

@@ -3,6 +3,7 @@ import { h, inline } from '../util.js';
 import { store } from '../store.js';
 import { ic, fold } from './ui.js';
 import { renderBlocks } from './guide.js';
+import { scenarieRow } from './scenarie.js';
 
 const RING_HVIS = [
   'nogen er bevidstløs eller ikke trækker vejret normalt', 'der er kraftig blødning, der ikke standser', 'der er mistanke om brud, rygskade eller hovedskade',
@@ -12,8 +13,10 @@ const RING_HVIS = [
 export function pageNod() {
   const el = h('div', { class: 'nod' });
   el.append(h('h1', null, 'Nød'), h('p', { class: 'lede' }, 'Vælg det, der passer bedst. Ved livsfare: ring 112 først (knappen øverst).'));
+  el.append(h('h2', { class: 'subhead' }, 'Akut'));
   el.append(h('ul', { class: 'nodlist' }, store.content.nodmenu.map((n) =>
     h('li', null, h('a', { class: 'nodrow', href: '#/g/' + n.guide }, ic(n.ikon, 'ic lead'), h('span', { class: 'rt' }, h('b', null, n.titel), h('small', null, n.tekst)), ic('chevron', 'ic chev'))))));
+  el.append(h('h2', { class: 'subhead' }, 'Kriser og hændelser'), h('ul', { class: 'nodlist' }, (store.content.scenarier || []).map(scenarieRow)));
   el.append(fold('Ring 112 hvis …', h('ul', null, RING_HVIS.map((t) => h('li', null, t))), { open: true, cls: 'danger', warn: true }));
   const g = store.byId.get('nod-1min')?.item;
   if (g) el.append(fold('Nødprocedure på under ét minut', renderBlocks(g.blokke)));

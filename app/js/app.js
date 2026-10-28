@@ -68,12 +68,13 @@ async function render() {
       case 'lister': node = await V.pageList(parts[1]); title = c.lists.find((x) => x.id === parts[1])?.titel || ''; nav = 'gemte'; parent = '#/gemte'; break;
       case 'gemte': node = await V.pageGemte(); title = 'Gemte'; nav = 'gemte'; break;
       case 'sog': node = V.pageSearch(q); title = 'Søg'; break;
+      case 'scenarie': { const sc = (c.scenarier || []).find((x) => x.id === parts[1]); node = await V.pageScenarie(parts[1]); title = sc?.titel || ''; show112 = !!sc?.ring112; nav = 'nod'; parent = '#/nod'; break; }
       case 'spoerg': node = V.pageChat(q); title = 'Spørg AI'; parent = '#/sog'; break;
       case 'kilder': node = V.pageKilder(); title = 'Kilder'; parent = '#/indstillinger'; break;
       case 'indstillinger': node = await V.pageSettings(ctx); title = 'Indstillinger'; break;
       case 'kort': {
         const { pageMap } = await import('./mapview.js');
-        const r = await pageMap(ctx);
+        const r = await pageMap(ctx, parts[1]);
         node = r.node; current.cleanup = r.cleanup; if (r.fullmap) main.classList.add('fullmap');
         title = 'Kort'; nav = 'kort';
         break;

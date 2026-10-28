@@ -3,7 +3,7 @@
 
 export const FONT = { regular: ['OpenSans-Regular'], bold: ['OpenSans-Bold'], italic: ['OpenSans-Italic'] };
 
-const LIGHT = {
+export const LIGHT = {
   sea: '#a9d0e6', land: '#f2efe4', farmland: '#f4f0dc', grass: '#dfe9c3', green: '#cfe5b4', forest: '#9fc98b', heath: '#d8c3da',
   scrub: '#bcd69a', wetland: '#c3dfd0', beach: '#f1e1a6', urban: '#dcd6cc', bare: '#d8d0c4', water: '#8ec5e6', waterLine: '#4f9cc8',
   contour: '#a87d48', contourMajor: '#8a5a24', building: '#b9ada0', buildingLine: '#8d8174',
@@ -11,7 +11,7 @@ const LIGHT = {
   track: '#8a6a3a', path: '#b5372b', rail: '#555555', protected: '#2d7a3e', boundary: '#6a2d8f',
   text: '#222', textHalo: '#ffffffd0', water_text: '#1a5f8a', mask: '#1d2a22',
 };
-const DARK = {
+export const DARK = {
   sea: '#0e2433', land: '#1a211c', farmland: '#1d2520', grass: '#243126', green: '#26402b', forest: '#1f4a2c', heath: '#3a2f40',
   scrub: '#2e4429', wetland: '#223c33', beach: '#4a4326', urban: '#2e2f2c', bare: '#35322d', water: '#143a52', waterLine: '#2c7aa3',
   contour: '#8f6d42', contourMajor: '#b58a52', building: '#4a4640', buildingLine: '#69635a',

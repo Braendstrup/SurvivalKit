@@ -3,7 +3,7 @@
    bruges, indtil brugeren accepterer opdateringen. Fejler en fil under installation, afbrydes hele installationen og den
    eksisterende version er uændret (atomisk opdatering). Kortpakkerne ligger i IndexedDB og håndteres af appen selv.
    AI-runtime (vendor/mediapipe) er ikke i forhåndscachen: appen lægger den i en separat cache (sk-ai-*), når en model hentes. */
-const VERSION = '0.9.0-2504842575';
+const VERSION = '0.9.0-fd3bd89abc';
 const CACHE = 'sk-static-' + VERSION;
 const PRECACHE = [
  "./",
@@ -20,10 +20,13 @@ const PRECACHE = [
  "js/ai/safety.js",
  "js/ai/sha256.js",
  "js/app.js",
+ "js/areas.js",
  "js/db.js",
  "js/geo.js",
  "js/mapview.js",
+ "js/mvt.js",
  "js/packs.js",
+ "js/scenarier.js",
  "js/store.js",
  "js/util.js",
  "js/views.js",
@@ -33,6 +36,7 @@ const PRECACHE = [
  "js/views/guide.js",
  "js/views/home.js",
  "js/views/nod.js",
+ "js/views/scenarie.js",
  "js/views/search.js",
  "js/views/settings.js",
  "js/views/ui.js",
@@ -46,10 +50,13 @@ const PRECACHE = [
  "map/glyphs/OpenSans-Regular/0-255.pbf",
  "map/glyphs/OpenSans-Regular/256-511.pbf",
  "map/glyphs/OpenSans-Regular/8192-8447.pbf",
+ "map/style-omt.js",
  "map/style.js",
  "vendor/maplibre-LICENSE.txt",
  "vendor/maplibre-gl.css",
  "vendor/maplibre-gl.js",
+ "vendor/mlcontour-LICENSE.txt",
+ "vendor/mlcontour.js",
  "vendor/pmtiles.js"
 ];
 

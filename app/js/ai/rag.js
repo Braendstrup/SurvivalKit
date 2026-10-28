@@ -6,7 +6,7 @@ const STOP = new Set('og i at det en den til er som paa med for af ikke der har 
 const plain = (t) => String(t || '').replace(/\[\[([^\]|]+)\|?([^\]]*)\]\]/g, (_, id, l) => l || id).replace(/\*\*?/g, '').replace(/\{[DTF]\}/g, '').replace(/\s+/g, ' ').trim();
 
 // Let dansk ordstamme (bøjningsendelser), så "bløder" finder "blødning" – uden at "armen" matcher "varmen"
-export const stem = (t) => { const r = t.replace(/(erne|ende|ning|ninger|ede|ene|er|en|et|ne|te|de|e|s)$/, ''); return r.length >= 4 ? r : t; };
+export const stem = (t) => { const r = t.replace(/(erne|ende|ning|ninger|ede|ene|er|en|et|ne|te|de|e|s)$/, ''); return r.length >= 3 && t.length >= 4 ? r : t; };
 export function queryTokens(q) { return [...new Set(tokens(q).filter((t) => !STOP.has(t)))]; }
 
 // Rangér guides og arter efter summen af matchende ord (titel/tags vægter mest)
@@ -15,14 +15,14 @@ export function retrieve(q, k = 4) {
   if (!qt.length) return [];
   const scored = [];
   for (const d of store.index) {
-    if (d.type !== 'g' && d.type !== 'a') continue;
+    if (d.type !== 'g' && d.type !== 'a' && d.type !== 's') continue;
     let score = 0, hits = 0;
     for (const t of qt) {
       let best = 0; const st = stem(t);
       for (const [tok, w] of d.tok) {
         if (tok === t) best = Math.max(best, w * 3);
         else if (t.length > 3 && tok.startsWith(t)) best = Math.max(best, w * 2);
-        else if (st.length >= 4 && tok.startsWith(st)) best = Math.max(best, w * 1.5);
+        else if (st.length >= 3 && st !== t && tok.startsWith(st)) best = Math.max(best, w * 1.5);
         else if (tok.length > 4 && t.startsWith(tok)) best = Math.max(best, w);
       }
       if (best) { score += best; hits++; }
@@ -42,6 +42,7 @@ export function retrieve(q, k = 4) {
 // Uddrag af én kilde inden for et tegnbudget: resumé + de afsnit, der indeholder søgeord (ellers handling/sikkerhed)
 export function excerpt(src, qt, budget = 1500) {
   const it = src.item;
+  if (src.type === 's') return cut([it.resume, ...it.faser.map((f) => f.titel + ': ' + f.trin.map((t) => plain(t.x || t.tekst)).join(' '))].map(plain).join(' '), budget);
   if (src.type === 'a') {
     const parts = [`${it.dansk} (${it.latin}). Kategori: ${it.kategoriLabel || it.kategori}.`, it.advarsel, it.kendetegn && 'Kendetegn: ' + it.kendetegn, it.dele && 'Spiselige dele: ' + it.dele, it.sikkerhed && 'Sikkerhed: ' + it.sikkerhed,
       (it.forvekslinger || []).length && 'Forvekslinger: ' + it.forvekslinger.map((f) => `${f.navn} (${plain(f.fare)})`).join('; '), it.farligeDobbelt];

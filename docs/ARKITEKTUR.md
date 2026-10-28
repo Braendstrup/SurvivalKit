@@ -10,6 +10,8 @@ tools/mapdata/*.py ──► app/map/pack/{djursland-vector.pmtiles, djursland-d
 app/ (statisk, ingen server-logik)
   index.html, css/app.css, js/{app,views,store,db,packs,geo,mapview,util}.js
   js/views/{ui,home,guide,nod,gemte,search,settings,arter,chat}.js  (én fil pr. sidetype; views.js samler dem)
+  js/areas.js, js/mvt.js  (selvvalgte kortområder: flisematematik, download, IndexedDB, navneudtræk fra vektorfliser)
+  map/style-omt.js  (kortstil til OpenMapTiles-skemaet; samme farver som Djursland)
   js/ai/{engine,models,rag,safety,sha256}.js  (AI-assistent: motorer, modeldownload, håndbogsopslag, sikkerhedsregler)
   vendor/mediapipe/  (MediaPipe LLM Inference 0.10.30 – ikke i forhåndscachen; caches ved modeldownload)
   vendor/ (MapLibre, PMTiles – lokale kopier)   map/{style.js, glyphs/}
@@ -31,7 +33,7 @@ app/ (statisk, ingen server-logik)
 
 ## Datamodel (content.json)
 
-`chapters`, `temaer` (6 temaer, der grupperer kapitlerne; hvert kapitel ligger i præcis ét tema), `guides` (blokke: p/h/ul/ol/steps/callout/call112/fig/figs/table/kv/details/sec), `species`, `lists`, `sources`, `figs`, `nodmenu`, `build`.
+`chapters`, `scenarier` (faser → trin `{ x, ev, link?, alarm?, hvis? }` og spørgsmål `{ spm, tekst, svar }`; build validerer kilder, links og at `hvis` peger på et tidligere spørgsmål og gyldige svar), `temaer` (6 temaer, der grupperer kapitlerne; hvert kapitel ligger i præcis ét tema), `guides` (blokke: p/h/ul/ol/steps/callout/call112/fig/figs/table/kv/details/sec), `species`, `lists`, `sources`, `figs`, `nodmenu`, `build`.
 Hver guide/art har `kontrol` (status, dato, note) og `kilder` (id'er til kilderegistret). Mini-markup i tekst: `**fed**`, `*kursiv*`, `[[id|tekst]]` (internt link), `{D}`/`{T}`/`{F}` (dokumenteret / tommelfingerregel / faglig vurdering).
 
 ## Koordinater
@@ -48,10 +50,12 @@ Bundmenu med fire faner: **Hjem · Nød · Kort · Gemte**. Toplinjen har tilbag
 | `#/tema/:id` | Tema med kapitler og deres guides |
 | `#/kap/:id`, `#/g/:id` | Kapitel og guide (`?q=` åbner de foldede afsnit, der indeholder søgeordet) |
 | `#/nod` | De 8 nødsituationer, "Ring 112 hvis", nødprocedure, andre numre |
-| `#/kort` | Offlinekort |
+| `#/kort` | Offlinekort (Djursland eller valgt område) |
+| `#/kort/nyt` | Hent nyt kortområde (`?resume=<id>` genoptager) |
 | `#/gemte` | Bogmærker, tjeklister med fremdrift, noter, nødkontakter |
 | `#/lister/:id` | Tjekliste |
 | `#/spoerg` | AI-assistent (åbnes fra Søg) |
+| `#/scenarie/:id` | Scenarie: faser, afkrydsning og forgreninger (fremdrift i kv `scn.<id>`) |
 | `#/sog`, `#/arter`, `#/a/:id`, `#/kilder`, `#/indstillinger` | Søg, artsguide, art, kilder, indstillinger |
 | `#/mig`, `#/lister` | Omdirigeres til `#/indstillinger` og `#/gemte` (gamle links) |
 

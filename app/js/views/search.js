@@ -3,7 +3,7 @@ import { h } from '../util.js';
 import { store, search, routeOf } from '../store.js';
 import { row } from './ui.js';
 
-const GROUPS = [['g', 'Guides'], ['kap', 'Kapitler'], ['a', 'Arter'], ['l', 'Tjeklister']];
+const GROUPS = [['s', 'Scenarier'], ['g', 'Guides'], ['kap', 'Kapitler'], ['a', 'Arter'], ['l', 'Tjeklister']];
 
 export function pageSearch(q = '') {
   const el = h('div', { class: 'searchpage' });

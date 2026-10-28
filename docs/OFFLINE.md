@@ -15,6 +15,9 @@
 ## Begrænsninger ved browserlager
 Browsere kan rydde websitelager ved lav lagerplads eller lang inaktivitet (Safari/iOS: op til 7 dage uden brug, hvis ikke tilføjet startskærm). Appen anmoder om vedvarende lager (`navigator.storage.persist()`) og viser status under **Indstillinger → Offline og lagring**. Eksportér derfor noter og waypoints (JSON/GPX).
 
+## Kortområder offline
+Selvvalgte kortområder gemmes flise for flise i IndexedDB (`tiles`, `areas`) og vises udelukkende fra lageret. Det gælder også højdekurver og skyggerelief, som beregnes på enheden. Fuld offlinebrug efter genstart er testet (e2e O10).
+
 ## AI-assistent offline
 Sprogmodellen (2–3 GB) ligger i browserens fillager (OPFS) og AI-programfilerne (MediaPipe, ≈ 27 MB) i en separat cache (`sk-ai-*`), som først oprettes, når brugeren henter en model. Appens grundinstallation er derfor uændret (≈ 2 MB). Download sker i bidder af 64 MB med HTTP range og kan genoptages efter afbrydelse; filen kontrolleres med SHA-256, før den aktiveres. Ingen spørgsmål sendes ud af enheden.
 

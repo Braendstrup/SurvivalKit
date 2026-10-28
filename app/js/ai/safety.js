@@ -12,7 +12,7 @@ export function emergency(q) { const f = foldText(q); return EMERGENCY.some((r) 
 const EAT = /\bspis|spiselig|\bsmage|svamp|\bbaer|giftig|\bplante|\burt(er)?\b|\brod(der)?\b|\bfrugt|\bnodder|forvekslin/;
 export const isEatQuestion = (q) => EAT.test(foldText(q));
 export function isSensitive(q, sources) {
-  return emergency(q) || isEatQuestion(q) || sources.some((s) => s.type === 'a' || s.kap === 'nod' || s.kap === 'foerstehjaelp' || s.kap === 'arter' || s.kap === 'mad');
+  return emergency(q) || isEatQuestion(q) || sources.some((s) => s.type === 'a' || (s.type === 's' && s.item?.ring112) || s.kap === 'nod' || s.kap === 'foerstehjaelp' || s.kap === 'arter' || s.kap === 'mad');
 }
 
 export const EAT_RULE = 'Spis kun planter, bær og svampe, du kender 100 % – og kun hvis artsguiden angiver dem som spiselige. Billeder og AI kan ikke garantere sikker bestemmelse.';

@@ -8,3 +8,4 @@ export { pageSearch } from './views/search.js';
 export { pageSettings, pageKilder } from './views/settings.js';
 export { pageArter, pageArt } from './views/arter.js';
 export { pageChat } from './views/chat.js';
+export { pageScenarie } from './views/scenarie.js';

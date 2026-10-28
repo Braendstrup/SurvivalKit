@@ -106,42 +106,53 @@ export async function openActive() {
   const dem = new pmtiles.PMTiles(new BlobSource(blobs.dem, active.files.dem));
   let search = null;
   if (blobs.search) { try { search = JSON.parse(await blobs.search.text()); } catch { search = null; } }
-  opened = { version: active.version, manifest: active.manifest, vec, dem, search, demCache: new Map() };
+  opened = { version: active.version, manifest: active.manifest, vec, dem, search };
   return opened;
 }
 export function closeActive() { opened = null; }
 
-/** Højde (m) fra DEM-pakken via bilineær interpolation; null hvis ingen data. */
-export async function elevationAt(lon, lat) {
-  const p = await openActive(); if (!p) return null;
-  const z = 13, n = 2 ** z;
-  const fx = (lon + 180) / 360 * n;
-  const fy = (1 - Math.asinh(Math.tan(lat * Math.PI / 180)) / Math.PI) / 2 * n;
-  const sample = async (X, Y) => {
-    const tx = X, ty = Y;
+/**
+ * Højdeopslag fra Terrarium-fliser (bilineær interpolation). getTile(x, y) → ArrayBuffer (PNG) eller null.
+ * Bruges både af Djursland-pakken (z13) og af selvvalgte områder (z12).
+ */
+export function makeElevation(getTile, z) {
+  const cache = new Map();
+  const n = 2 ** z;
+  const sample = async (tx, ty) => {
     const key = `${tx}/${ty}`;
-    let img = p.demCache.get(key);
+    let img = cache.get(key);
     if (img === undefined) {
-      const t = await p.dem.getZxy(z, tx, ty);
-      if (!t) img = null;
+      const data = await getTile(tx, ty);
+      if (!data || !data.byteLength) img = null;
       else {
-        const bmp = await createImageBitmap(new Blob([t.data], { type: 'image/png' }), { colorSpaceConversion: 'none', premultiplyAlpha: 'none' });
+        const bmp = await createImageBitmap(new Blob([data], { type: 'image/png' }), { colorSpaceConversion: 'none', premultiplyAlpha: 'none' });
         const c = new OffscreenCanvas(256, 256); const ctx = c.getContext('2d', { willReadFrequently: true });
         ctx.drawImage(bmp, 0, 0); img = ctx.getImageData(0, 0, 256, 256).data; bmp.close?.();
       }
-      p.demCache.set(key, img); if (p.demCache.size > 12) p.demCache.delete(p.demCache.keys().next().value);
+      cache.set(key, img); if (cache.size > 12) cache.delete(cache.keys().next().value);
     }
     return img;
   };
-  const gx = fx * 256 - 0.5, gy = fy * 256 - 0.5;
-  const x0 = Math.floor(gx), y0 = Math.floor(gy), ax = gx - x0, ay = gy - y0;
-  const px = async (X, Y) => {
-    const img = await sample(Math.floor(X / 256), Math.floor(Y / 256));
-    if (!img) return null;
-    const i = (((Y % 256) + 256) % 256 * 256 + (((X % 256) + 256) % 256)) * 4;
-    return img[i] * 256 + img[i + 1] + img[i + 2] / 256 - 32768;
+  return async (lon, lat) => {
+    const fx = (lon + 180) / 360 * n;
+    const fy = (1 - Math.asinh(Math.tan(lat * Math.PI / 180)) / Math.PI) / 2 * n;
+    const gx = fx * 256 - 0.5, gy = fy * 256 - 0.5;
+    const x0 = Math.floor(gx), y0 = Math.floor(gy), ax = gx - x0, ay = gy - y0;
+    const px = async (X, Y) => {
+      const img = await sample(Math.floor(X / 256), Math.floor(Y / 256));
+      if (!img) return null;
+      const i = (((Y % 256) + 256) % 256 * 256 + (((X % 256) + 256) % 256)) * 4;
+      return img[i] * 256 + img[i + 1] + img[i + 2] / 256 - 32768;
+    };
+    const v = await Promise.all([px(x0, y0), px(x0 + 1, y0), px(x0, y0 + 1), px(x0 + 1, y0 + 1)]);
+    if (v.some((q) => q == null)) return null;
+    return (v[0] * (1 - ax) + v[1] * ax) * (1 - ay) + (v[2] * (1 - ax) + v[3] * ax) * ay;
   };
-  const v = await Promise.all([px(x0, y0), px(x0 + 1, y0), px(x0, y0 + 1), px(x0 + 1, y0 + 1)]);
-  if (v.some((q) => q == null)) return null;
-  return (v[0] * (1 - ax) + v[1] * ax) * (1 - ay) + (v[2] * (1 - ax) + v[3] * ax) * ay;
+}
+
+/** Højde (m) fra Djursland-pakkens DEM; null hvis ingen data. */
+export async function elevationAt(lon, lat) {
+  const p = await openActive(); if (!p) return null;
+  p.elev ||= makeElevation(async (x, y) => (await p.dem.getZxy(13, x, y))?.data || null, 13);
+  return p.elev(lon, lat);
 }

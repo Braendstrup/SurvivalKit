@@ -5,6 +5,7 @@ import * as db from '../db.js';
 import * as packs from '../packs.js';
 import { ic, toast, kontrolBadge, row } from './ui.js';
 import { aiSettingsCard } from './chat.js';
+import * as areas from '../areas.js';
 
 const stat = (label, val) => h('div', { class: 'stat' }, h('span', null, label), h('strong', null, val));
 
@@ -25,6 +26,7 @@ export async function pageSettings(ctx) {
       h('span', null, 'Gem min senest registrerede position lokalt (kun på enheden, kun når kortets GPS er aktiv)'))));
 
   el.append(h('h2', { class: 'subhead' }, 'Offline og lagring'), await dataCard(ctx));
+  el.append(h('h2', { class: 'subhead' }, 'Kortområder'), await areasCard());
   el.append(h('h2', { class: 'subhead' }, 'AI-assistent'), await aiSettingsCard());
 
   el.append(h('h2', { class: 'subhead' }, 'Om'), h('ul', { class: 'list' },
@@ -58,6 +60,18 @@ async function dataCard(ctx) {
     } }))));
   box.append(h('div', { class: 'btnrow' }, h('button', { class: 'btn danger small', onclick: async () => { if (!confirm('Slet ALLE lokale data: noter, kontakter, waypoints, bogmærker og kortpakke?')) return; await packs.removePacks(); await db.wipeAll(); toast('Alt er slettet'); setTimeout(() => location.reload(), 600); } }, 'Slet alle lokale data')));
   return box;
+}
+
+async function areasCard() {
+  const list = await areas.listAreas();
+  const ul = h('ul', { class: 'list' });
+  const draw = (items) => ul.replaceChildren(...(items.length ? items.map((a) => h('li', { class: 'withaction' },
+    h('a', { href: a.ready ? '#/kort' : '#/kort/nyt?resume=' + a.id, onclick: async () => { if (a.ready) await db.kvSet('map.source', a.id); } }, ic('map', 'ic lead'),
+      h('span', { class: 'rt' }, h('b', null, a.name), h('small', null, a.ready ? `${fmtMB(a.bytes)} · hentet ${new Date(a.finished || a.created).toLocaleDateString('da-DK')}` : 'Ufuldstændig – tryk for at genoptage'))),
+    h('button', { class: 'iconbtn', 'aria-label': 'Slet ' + a.name, onclick: async () => { if (!confirm(`Slet kortområdet "${a.name}"?`)) return; await areas.deleteArea(a.id); if ((await db.kvGet('map.source', null)) === a.id) await db.kvSet('map.source', 'djursland'); toast('Området er slettet'); draw(await areas.listAreas()); } }, ic('x'))))
+    : [h('li', { class: 'empty' }, 'Ingen hentede områder ud over Djursland.')]));
+  draw(list);
+  return h('div', null, ul, h('div', { class: 'btnrow' }, h('a', { class: 'btn secondary', href: '#/kort/nyt' }, ic('plus'), 'Hent nyt område')));
 }
 
 export function pageKilder() {

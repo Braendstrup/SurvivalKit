@@ -7,12 +7,12 @@ Genereret af `tools/report.mjs`. Tallene stammer fra den seneste faktiske kørse
 ```
 UTM32-test: 8 punkter, største afvigelse 0.00000 m, haversine Grenaa-Ebeltoft ca. 25.4 km
 OK
-Indholdstest: 101 guides, 31 arter, 38 kilder – OK
+Indholdstest: 101 guides, 31 arter, 49 kilder – OK
 ```
 
 ## End-to-end (browser)
 
-Kørt 2026-10-27T23:10:56.295Z; 40/40 bestået; varighed 177 s.
+Kørt 2026-10-28T06:12:06.583Z; 59/59 bestået; varighed 209 s.
 
 | ID | Test | Resultat | Detalje |
 |---|---|---|---|
@@ -27,10 +27,21 @@ Kørt 2026-10-27T23:10:56.295Z; 40/40 bestået; varighed 177 s.
 | U01 | Forsiden: søgefelt, ét nødkort, 6 temakort og ingen 112-opfordring | OK | akut, ly-vand, mad-natur, vej-vejr, udstyr, regler |
 | U02 | 112-knappen vises kun på Nød og i nødrelaterede guides | OK |  |
 | U03 | Guide: Fremgangsmåde og Sikkerhed er åbne, øvrige afsnit foldet; søgetræf åbner afsnittet | OK | søgeord: sygdomsfremkaldende |
-| U04 | Ingen vandret scroll ved 320–768 px på hovedsiderne | OK | 11 sider × 4 bredder |
+| U04 | Ingen vandret scroll ved 320–768 px på hovedsiderne | OK | 13 sider × 4 bredder |
 | U05 | Gamle routes omdirigeres, og tjekliste-sider virker uændret | OK |  |
 | U06 | Gem og fjern en guide: vises på Gemte og under "Fortsæt" på forsiden | OK |  |
 | U07 | Bundmenu: 4 faner, og den aktive fane følger siden | OK |  |
+| S01 | Scenarier: alle åbner med faser, trin, kilder – og står på Nød-siden | OK | 8 scenarier |
+| S02 | Scenarier: et svar ændrer de viste trin (strømmen går: kun hos mig / hele området) | OK |  |
+| S03 | Scenarier: afkrydsning og svar gemmes og overlever genindlæsning | OK |  |
+| S04 | Scenarier: 112-knappen følger scenariet (storm ja, strøm nej) | OK |  |
+| S05 | Scenarier: findes via søgning og i temaet Regler & beredskab | OK |  |
+| A01 | AI: "Spørg AI" fra søgning giver svar med kildelinks og mærket egen viden | OK |  |
+| A02 | AI: nødord viser 112-boksen, før modellen svarer | OK |  |
+| A03 | AI: på følsomt emne afvises svar med egen viden (vises aldrig) | OK |  |
+| A04 | AI: Stop afbryder svaret og markerer det som ufuldstændigt | OK |  |
+| A05 | AI: uden WebGPU vises en ærlig forklaring, og Indstillinger viser AI-status | OK |  |
+| A06 | AI: appen henter intet modelrelateret, før brugeren vælger det | OK | kun 127.0.0.1:44199 |
 | F09 | Kortpakke hentes med fremdrift, SHA-256-kontrol og aktiveres | OK | version 2026.10.26 |
 | K01 | Kortet viser data på flere zoomniveauer (veje, skov, vand, kurver, bygninger, punkter) | OK | 13 lag/zoom-kombinationer med data |
 | K02 | Koordinater, målestok, nordpil og højde vises korrekt | OK | Midte: Ø 604054 N 6229471 · 56.1988, 10.6771 / højde ≈ 9 m / zoom 14.0 |
@@ -44,9 +55,15 @@ Kørt 2026-10-27T23:10:56.295Z; 40/40 bestået; varighed 177 s.
 | R01 | Begrænset lager: hentning afvises tydeligt og ændrer intet | OK | afvist ved 20 MB kvote |
 | R02 | Afbrudt opdatering (forbindelse mistes midt i hentning): gammel pakke forbliver aktiv og kortet virker | OK | aktiv version uændret: 2026.10.26 |
 | R03 | Korrupt pakkefil afvises via SHA-256 og efterlader den gamle pakke urørt | OK | korruption opdaget |
-| R04 | Afbrudt service worker-opdatering (manglende fil) efterlader den eksisterende version i brug | OK | cache uændret: sk-static-0.9.0-61b51dcb5f |
+| R04 | Afbrudt service worker-opdatering (manglende fil) efterlader den eksisterende version i brug | OK | cache uændret: sk-static-0.9.0-fd3bd89abc |
 | R05 | Ingen JavaScript-fejl i sessionen (online fase) | OK |  |
-| R06 | Under normal brug kontaktes kun appens egen server (ingen CDN, fonte eller eksterne API'er) | OK | 127.0.0.1:33511, |
+| R06 | Under normal brug kontaktes kun appens egen server (ingen CDN, fonte eller eksterne API'er) | OK | 127.0.0.1:44199, |
+| M01 | Kortområder: områdevælgeren viser Djursland og "Hent nyt område" | OK |  |
+| M02 | Kortområder: for store områder spærres (OpenFreeMaps grænse på 3.000 fliser) | OK | Zoom ind – området er for stort. 5.402 fliser (højst 3.000 pr. område). |
+| M03 | Kortområder: download med fremdrift, højst 4 samtidige forespørgsler og søgeindeks | OK | 34 fliser, 24 navne, max 4 samtidige |
+| M04 | Kortområder: området vises med lag, højdekurver, højde og søgning | OK | vand 57, kurver 16 |
+| M05 | Kortområder: afbrudt download kan genoptages og fuldføres | OK | 38 fliser efter genoptagelse |
+| M06 | Kortområder: sletning fjerner området og frigør dets egne fliser (delte fliser bevares) | OK | fliser 59 → 34 |
 | O01 | OFFLINE (server lukket, browser genstartet): appen starter og viser forsiden | OK |  |
 | O02 | OFFLINE: alle kernekapitler og alle guides kan læses | OK | 101 guides + 17 kapitler |
 | O03 | OFFLINE: illustrationer indlæses (inline SVG, knob-tegninger) | OK |  |
@@ -55,7 +72,9 @@ Kørt 2026-10-27T23:10:56.295Z; 40/40 bestået; varighed 177 s.
 | O06 | OFFLINE: kortet starter og vises i flere zoomniveauer | OK | z8.6:2 z10:317 z12:28 z14:1794 |
 | O07 | OFFLINE: kortsøgning, højde og lokalt gemte waypoints kan åbnes | OK |  |
 | O08 | OFFLINE: ny waypoint kan gemmes, og eksport virker | OK |  |
-| O09 | OFFLINE: ingen fejlede eller eksterne netværkskald under hele offline-sessionen | OK | 127.0.0.1:33511,, 0 fejlede |
+| O10 | OFFLINE: et hentet kortområde kan vælges og vises (lag og højdekurver) | OK | vand 57, kurver 16 |
+| O11 | OFFLINE: scenarier åbner, og gemt fremdrift er bevaret efter genstart | OK |  |
+| O09 | OFFLINE: ingen fejlede eller eksterne netværkskald under hele offline-sessionen | OK | 127.0.0.1:44199,, 0 fejlede |
 
 **Offline-test:** fase 4 (O01–O09) lukker den lokale webserver helt og genstarter browseren med samme profil. Appen skal da starte fra service worker-cachen og IndexedDB. Netværksværter og fejlede kald logges (O09).
 
