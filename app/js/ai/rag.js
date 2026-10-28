@@ -13,22 +13,25 @@ export function queryTokens(q) { return [...new Set(tokens(q).filter((t) => !STO
 export function retrieve(q, k = 4) {
   const qt = queryTokens(q);
   if (!qt.length) return [];
-  const scored = [];
-  for (const d of store.index) {
-    if (d.type !== 'g' && d.type !== 'a' && d.type !== 's') continue;
-    let score = 0, hits = 0;
-    for (const t of qt) {
-      let best = 0; const st = stem(t);
-      for (const [tok, w] of d.tok) {
-        if (tok === t) best = Math.max(best, w * 3);
-        else if (t.length > 3 && tok.startsWith(t)) best = Math.max(best, w * 2);
-        else if (st.length >= 3 && st !== t && tok.startsWith(st)) best = Math.max(best, w * 1.5);
-        else if (tok.length > 4 && t.startsWith(tok)) best = Math.max(best, w);
-      }
-      if (best) { score += best; hits++; }
+  const docs = store.index.filter((d) => d.type === 'g' || d.type === 'a' || d.type === 's');
+  // Matchstyrke pr. dokument og søgeord; ord, der findes i mange dokumenter, vægtes ned (IDF)
+  const match = (d, t, st) => {
+    let best = 0;
+    for (const [tok, w] of d.tok) {
+      if (tok === t) best = Math.max(best, w * 3);
+      else if (t.length > 3 && tok.startsWith(t)) best = Math.max(best, w * 2);
+      else if (st.length >= 3 && st !== t && tok.startsWith(st)) best = Math.max(best, w * 1.5);
+      else if (tok.length > 4 && t.startsWith(tok)) best = Math.max(best, w);
     }
+    return best;
+  };
+  const per = qt.map((t) => { const st = stem(t); const m = docs.map((d) => match(d, t, st)); const df = m.filter(Boolean).length; return { m, idf: Math.log(1 + docs.length / (1 + df)) }; });
+  const scored = [];
+  docs.forEach((d, i) => {
+    let score = 0, hits = 0;
+    for (const { m, idf } of per) if (m[i]) { score += m[i] * idf; hits++; }
     if (hits) scored.push({ type: d.type, id: d.id, score: score * (hits / qt.length) });
-  }
+  });
   scored.sort((a, b) => b.score - a.score);
   if (!scored.length) return [];
   const top = scored[0].score;

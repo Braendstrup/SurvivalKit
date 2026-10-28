@@ -6,7 +6,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 
 | | Kontrolleret | Delvist | Ikke verificeret | I alt |
 |---|---|---|---|---|
-| Guides | 30 | 54 | 17 | 101 |
+| Guides | 47 | 57 | 17 | 121 |
 | Arter | 20 | 8 | 3 | 31 |
 
 ## Indhold der IKKE er fuldt verificeret
@@ -26,6 +26,7 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Bevidsthed og vejrtrækning – sideleje | Førstehjælp og sundhed | delvist | Principperne (ring 112 ved bevidstløshed, HLR hvis ikke normal vejrtrækning, stabilt sideleje ved normal vejrtrækning) er kontrolleret mod DRG/Sundhed.dk. Detaljer i sidelejet er almindelig førstehjælpsteknik og er ikke læst i en kilde i denne udgave. |
 | Forbrændinger | Førstehjælp og sundhed | delvist | Kølevand ca. 12–18 °C i 20–30 min og "ikke generel nedkøling" er hentet fra Lægehåndbogen (håndforbrændinger); 112 ved ansigt/luftvej fra Patienthåndbogen. Almen borgerside om forbrændinger er ikke læst i denne udgave. |
 | Flåtbid | Førstehjælp og sundhed | delvist | Risici og symptomer er kontrolleret mod Sundhed.dk (opdateret 6.5.2025). Fjernelsesteknikken (flåttang/pincet, jævnt tryk, ingen smør/olie) er fra sundhed.dk-resumé og almen praksis. |
+| Drukning og nærdrukning | Førstehjælp og sundhed | delvist | Førstehjælpen følger Sundhed.dk: Drukning og nær-drukning (opdateret 29.4.2024). Råd om egen sikkerhed ved redning er tommelfingerregler. |
 | Jeg fryser eller er våd | Ly og beskyttelse mod vejret | delvist | Nedkølingsråd er kontrolleret mod Sundhed.dk. De praktiske tiltag (isolering, lag, bevægelse) er almen friluftsviden ({T}). |
 | Find ly hurtigt og sikkert | Ly og beskyttelse mod vejret | delvist | Regler for overnatning (hængekøje, tarp, fri teltning) er kontrolleret mod Naturstyrelsen. Selve valg og opbygning er almen friluftspraksis ({T}). |
 | Tarp, presenning og simple læløsninger | Ly og beskyttelse mod vejret | delvist | Opbygning er almindelig friluftspraksis ({T}); overnatningsreglerne for tarp er kontrolleret (Naturstyrelsen). |
@@ -55,6 +56,8 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Kædestik (kort reb til opbevaring) | Knob, reb og improviserede hjælpemidler | ikke | Almen praksis ({T}); ikke kontrolleret mod en navngiven kilde. |
 | Bardunbinding til tarp eller læsejl | Knob, reb og improviserede hjælpemidler | ikke | Almen praksis ({T}); De Danske Spejdere omtaler den ikke. Tegning mangler. |
 | Samling af to reb – diameter og belastning | Knob, reb og improviserede hjælpemidler | delvist | Valget følger De Danske Spejdere (råbåndsknob kun lige tykke; flagknob bedre ved forskellig tykkelse; flagknobets styrke omdiskuteret). Øvrige råd om belastning er almen forsigtighed. |
+| Krydsbesnøring (diagonalsurring) | Knob, reb og improviserede hjælpemidler | delvist | Fremgangsmåde fra dansk lokalt spejdermateriale (9530 spejder); ikke kontrolleret mod en anden kilde. |
+| Ottetalsbesnøring – trefod af tre rafter | Knob, reb og improviserede hjælpemidler | delvist | Fremgangsmåde fra dansk lokalt spejdermateriale (9530 spejder); ikke kontrolleret mod en anden kilde. |
 | Principper: mad fra naturen er et supplement, ikke en redning | Mad fra naturen | delvist | Beredskabsanbefalingen (3 døgn, mad der holder sig uden køl) er fra Samsik/Beredskabsstyrelsen; energi-versus-næring-påstanden er almen ernæringsviden og er ikke citeret. |
 | Hvad kan findes hvornår? Oversigt efter naturtype og årstid | Mad fra naturen | delvist | Arterne, der er nævnt, er dem, der indgår i artsguiden og er kontrolleret mod DTU/Fødevarestyrelsen; sæsoner er forenklede og afhænger af vejr og år ({T}). |
 | Nødder, frø og spiselige dele af træer og buske | Mad fra naturen | delvist | Retten til at samle nødder/frugter til eget brug er fra Naturstyrelsen. Hverken hasselnød, bøgeblade eller bøgenødder er vurderet i de læste fødevarekilder. |
@@ -118,12 +121,29 @@ Genereret af `tools/report.mjs` fra det indbyggede indhold (app-version 0.9.0, 2
 | Alvorlig allergi (anafylaksi), hvepse- og bistik | sdk-allergi |
 | Hugormebid | sdk-hugorm |
 | Forgiftning efter spist plante, svamp eller drukket vand | sdk-svampeforg, fvst-svampe, brs-112 |
+| Fremmedlegeme i luftvejene (kvælning) | sdk-fremmedlegeme, drg |
+| Krampeanfald (epilepsi) | sdk-kramper |
+| Blodprop eller blødning i hjernen (apopleksi) | sdk-apopleksi |
+| Brystsmerter og blodprop i hjertet | sdk-hjerte, drg |
+| Lavt eller højt blodsukker (diabetes) | sdk-diabetes |
+| Forfrysninger | sdk-forfrysning, sdk-hypotermi |
+| Hovedskade og mistanke om nakkeskade | sdk-hovedskade |
+| Næseblod | sdk-naeseblod |
+| Astmaanfald | sdk-astma |
+| Shock (kredsløbssvigt) | sdk-shock |
+| Besvimelse | sdk-besvimelse |
 | Bål: hvor og hvornår er det lovligt? | ns-ild, brs-afbraending, ns-baal, ns-teltning |
 | Slukning, eftersyn og håndtering af gløder | ns-baal, brs-afbraending |
 | Kulilte, røg og brandfare | sdk-kulilte, brs-forberedt |
 | Kogning af vand | mst-kog, who-kog |
 | Hygiejnisk opbevaring og undgå krydskontaminering | brs-forberedt |
 | Nødforsyning af drikkevand – danske anbefalinger | brs-forberedt, mst-kog |
+| Ottetalsløkke (dobbelt ottetalsknob) | ak-fig8 |
+| Alpesommerfugl (sommerfugleknob) | ak-butterfly, friluft-knob |
+| Dobbelt fiskerknob | ak-fisherman |
+| Prusikknude | ak-prusik, ak-fisherman |
+| Talje (lastbilstik) – stram en line hårdt | ak-trucker, ak-butterfly |
+| Vinkelbesnøring (kvadratsurring) | spejder-besnoering, ak-square |
 | Er denne plante, svamp eller mad sikker at spise? | fvst-svampe, dtu-planter, ns-samle |
 | Svampe: sikkerhedsstandard | fvst-svampe, fvst-svampefolder, sdk-svampeforg |
 | Mistanke om svampeforgiftning | sdk-svampeforg, fvst-svampe, brs-112 |
